@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -8,21 +8,28 @@ import {
   LogOut, 
   User2,
   ChevronRight
-} from 'lucide-react'; // Install lucide-react or use standard SVGs
+} from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Sidebar() {
-  const [activeItem, setActiveItem] = useState('Dashboard');
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook to check current active URL
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Attendance', icon: CalendarDays },
-    { name: 'Leave', icon: FileText },
-    { name: 'Payslips', icon: CircleDollarSign },
-    { name: 'Settings', icon: Settings },
+    { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+    { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
+    { name: 'Leave', icon: FileText, path: '/leave' },
+    { name: 'Payslips', icon: CircleDollarSign, path: '/payslips' },
+    { name: 'Settings', icon: Settings, path: '/settings' },
   ];
 
+  const handleLogout = () => {
+    // Clear tokens/session data here if needed
+    navigate('/login');
+  };
+
   return (
-    <aside className="flex h-screen w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none">
+    <aside className="flex h-screen w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">
       
       {/* Top Section */}
       <div>
@@ -59,17 +66,18 @@ export default function Sidebar() {
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeItem === item.name;
+            // Check if the item's path matches the current URL route path
+            const isActive = location.pathname === item.path;
 
             return (
               <button
                 key={item.name}
                 type="button"
-                onClick={() => setActiveItem(item.name)}
+                onClick={() => navigate(item.path)} // Action switches page view
                 className={`relative flex w-full items-center justify-between rounded-xl px-3 py-3 text-xs font-medium transition-all group duration-150 ${
                   isActive
-                    ? 'bg-indigo-950/40 text-indigo-400  border-indigo-900/30'
-                    : 'text-slate-400 hover:bg-slate-900/30 hover:text-slate-200'
+                    ? 'bg-indigo-950/40 text-indigo-400 border border-indigo-900/30'
+                    : 'text-slate-400 hover:bg-slate-900/30 hover:text-slate-200 border border-transparent'
                 }`}
               >
                 {/* Active Indicator Bar */}
@@ -93,6 +101,7 @@ export default function Sidebar() {
       <div className="border-t border-slate-900/60 pt-4">
         <button
           type="button"
+          onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-xs font-medium text-slate-400 transition-colors hover:bg-rose-950/20 hover:text-rose-400 group"
         >
           <LogOut className="h-4 w-4 text-slate-400 group-hover:text-rose-400 transition-colors" />
