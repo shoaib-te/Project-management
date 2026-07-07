@@ -9,10 +9,11 @@ import Payslip from "./pages/Payslip";
 import Settings from "./pages/Settings";
 import Employee from "./pages/Employee";
 import Attendance from "./pages/Attensdance";
+import PlayslipPrint from "./pages/PlayslipPrint";
 
 function Layout() {
   // Replace this hardcoded string with your actual auth state (e.g., Redux, Context, or localStorage)
-  const user = ""; 
+  const user = "shoaib"; 
   const location = useLocation();
   // const [isOpen, setIsOpen] = useState(false);
 
@@ -51,6 +52,7 @@ function App() {
           <Route path="/Settings" element={<Settings />} />
           <Route path="/Employee" element={<Employee />} />
           <Route path="/Attendance" element={< Attendance />} />
+          <Route path="/playslip/:id" element={< PlayslipPrint />} />
           
         </Route>
 

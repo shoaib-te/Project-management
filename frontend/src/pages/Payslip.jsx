@@ -1,5 +1,7 @@
 import React from 'react'
 import { Plus, Download } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 function Payslip() {
    const payslips = [
     { id: 1, employee: 'David Michael', period: 'February 2026', basicSalary: '$2,000', netSalary: '$2,180' },
@@ -15,15 +17,18 @@ function Payslip() {
     { id: 2, period: 'January 2026', basicSalary: '$1,000', netSalary: '$1,180' },
   ];
 
+  const navigate = useNavigate();
 
   const handleDownload = (id) => {
     // Action handler logic for exporting files
     console.log(`Downloading payslip ID: ${id}`);
+    navigate(`/playslip/${id}`); // Navigate to the payslip print page
+
   };
   
 
 
-  const data={role:""}
+  const data={role:"admin"}; // Replace with actual role from auth context or state
   if(data.role=== 'admin'){
     return(
       <div className="min-h-screen bg-slate-50/50 p-8 font-sans">
