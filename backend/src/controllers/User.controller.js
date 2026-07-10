@@ -1,44 +1,44 @@
-const User = require('../models/User');
+const User = require('../module/User.module');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 // Secret key for JWT (Move this to an environment variable in production)
-const JWT_SECRET = 'your_super_secret_jwt_key'; 
+const JWT_SECRET = process.env.JWT_SECRET;
 
-// 1. Register User
-exports.register = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
 
-        const userExists = await User.findOne({ email });
-        if (userExists) return res.status(400).json({ message: 'Email already registered' });
-
-        const newUser = new User({ name, email, password });
-        await newUser.save();
-
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
-// 2. Login User
+// 1. Login User
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password ,roletype } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
 
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const isMatch = await user.comparePassword(password);
+      if(roletype === "admin" && user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied for this role' });
+      }
+      if(roletype === "employee" && user.role !== 'employee') {
+        return res.status(403).json({ message: 'Access denied for this role' });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
+        const payload = { userId: user._id.toString(),
+             role: user.role,
+             email: user.email
+             };
         // Generate Token
-        const token = jwt.sign({ id: user._index }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 
         res.status(200).json({ 
             message: 'Login successful', 
             token, 
-            user: { id: user._id, name: user.name, email: user.email } 
+            user:payload
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -63,7 +63,7 @@ exports.requestPasswordReset = async (req, res) => {
         const resetToken = Math.random().toString(36).substring(2, 8).toUpperCase();
         
         user.resetToken = resetToken;
-        user.resetTokenExpiry = Date.now() + 3600000; // 1 Hour from now
+        user.resetTokenExpiry = Date.now() + 3 600000; // 1 Hour from now
         await user.save();
 
         // In a real application, you would send this token via email (e.g., using nodemailer)

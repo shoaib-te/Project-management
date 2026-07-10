@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
-const authRoutes = require('./routes/authRoutes');
-const workspaceRoutes = require('./routes/workspaceRoutes');
+const authRoutes = require('./router/User.route');
+const employeeRoutes = require('./router/employee.route');
 const app = express();
 
 app.use(cors());
@@ -12,7 +12,7 @@ app.use(morgan('dev'));
 
 // Connect your auth router with a clear prefix URL
 app.use('/api/auth', authRoutes);
-app.use('/api/workspaces', workspaceRoutes);
+app.use('/api/employees', employeeRoutes);
 
 
 module.exports=app 
