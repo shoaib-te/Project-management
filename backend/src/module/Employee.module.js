@@ -1,24 +1,35 @@
-const  DEPARTMENTS = require( '../constants/department');
+const DEPARTMENTS = require("../constants/department");
 
-const mongoose = require('mongoose');
-const employeeSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true },
-  phone: { type: String, required: true },
-  department: { type: String, enum: DEPARTMENTS, required: true }, // Added field
-  position: { type: String, required: true },
-  basicSalary: { type: Number, default: 0 },
-  allowances: { type: Number, default: 0 },
-  deductions: { type: Number, default: 0 },
-  employmentStatus: { type: String, enum: ["ACTIVE", "INACTIVE"], default: "ACTIVE" }, 
-  joiningDate: { type: Date, default: Date.now },
-  isDeleted: { type: Boolean, default: false },
-  bio: { type: String, default: "" },
-} , { timestamps: true });
+const mongoose = require("mongoose");
+const employeeSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    department: { type: String, enum: DEPARTMENTS, required: true }, // Added field
+    position: { type: String, required: true },
+    basicSalary: { type: Number, default: 0 },
+    allowances: { type: Number, default: 0 },
+    deductions: { type: Number, default: 0 },
+    employmentStatus: {
+      type: String,
+      enum: ["ACTIVE", "INACTIVE"],
+      default: "ACTIVE",
+    },
+    joiningDate: { type: Date, default: Date.now },
+    isDeleted: { type: Boolean, default: false },
+    bio: { type: String, default: "" },
+  },
+  { timestamps: true },
+);
 
-
-                       
-const Employee = mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
+const Employee =
+  mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
 module.exports = Employee;
