@@ -76,7 +76,7 @@ exports.getAllPayslips = async (req, res) => {
 
       return res
         .status(200)
-        .json({ success: true, count: payslips.length, data: payslips });
+        .json({ success: true,  data: payslips });
     }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
