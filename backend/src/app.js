@@ -7,6 +7,8 @@ const authRoutes = require('./router/user.route');
 const employeeRoutes = require('./router/employee.route');
 const profileRoutes = require('./router/profile.route');
 const attendanceRoutes = require('./router/attendancess.route');
+const leaveRoutes = require('./router/Leaves.route');
+
 
 const app = express();
 
@@ -17,13 +19,14 @@ app.use(morgan('dev'));
 
 // Grouped API Routes (V1)
 const apiRouter = express.Router();
+app.use('/v1/api', apiRouter);
+
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/employees', employeeRoutes);
 apiRouter.use('/profiles', profileRoutes);
 apiRouter.use('/attendance', attendanceRoutes);
-
+apiRouter.use('/leave',leaveRoutes)
 // Apply Version Prefix
-app.use('/v1/api', apiRouter);
 
 // Global 404 Route Handler
 app.use((req, res, next) => {

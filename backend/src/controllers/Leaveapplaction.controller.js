@@ -39,8 +39,8 @@ const createLeaveApplication = async (req, res) => {
         const newApplication = new LeaveApplication({
             employeeId:employee._id,
             type,
-            startDate=new Date(startDate),
-            endDate=new Date(endDate),
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
             reason,
             status:"PENDING",
 
