@@ -9,6 +9,7 @@ const profileRoutes = require('./router/profile.route');
 const attendanceRoutes = require('./router/attendancess.route');
 const leaveRoutes = require('./router/Leaves.route');
 const payslipsRoutes = require('./router/Payslips.route');
+const dashbordRoutes = require('./router/dashbord.route');
 
 
 const app = express();
@@ -28,6 +29,7 @@ apiRouter.use('/profiles', profileRoutes);
 apiRouter.use('/attendance', attendanceRoutes);
 apiRouter.use('/leave',leaveRoutes)
 apiRouter.use('/payslips',payslipsRoutes)
+apiRouter.use('/dashbord',dashbordRoutes)
 // Apply Version Prefix
 
 // Global 404 Route Handler
