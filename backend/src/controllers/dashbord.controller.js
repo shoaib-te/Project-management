@@ -55,11 +55,11 @@ const dashbordcontroller = async () => {
 
 
           }).sort({  createdAt:-1}).lean()
-        ]),
-        
+        ]);
+
         return res.json({
-          role='employee',
-          employee={
+          role:'employee',
+          employee:{
             ...employee,
             id:employee._id.toString()
           },
