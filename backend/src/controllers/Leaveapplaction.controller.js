@@ -1,5 +1,6 @@
 const LeaveApplication = require("../module/Leaveapplaction.module"); 
 const Employee = require("../module/Employee.module");
+const { inngest } = require("../inngest");
 
 // Create a new leave application
 const createLeaveApplication = async (req, res) => {
@@ -48,6 +49,12 @@ const createLeaveApplication = async (req, res) => {
         });
 
         await newApplication.save();
+        await inngest.send({
+            name:"leave/pending",
+            data:{
+                leaveapplactionId:newApplication._id
+            }
+        })
         res.status(201).json({ message: "Leave application submitted successfully.", data: newApplication });
     } catch (error) {
         res.status(500).json({ message: "Server error.", error: error.message });

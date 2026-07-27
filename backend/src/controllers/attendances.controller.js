@@ -1,4 +1,5 @@
 
+const { inngest } = require("../inngest");
 const Attendance = require("../module/Attendances.module");
 const Employee = require("../module/Employee.module");
 // get attendance by employee and checkout date
@@ -35,6 +36,13 @@ if (!attendance) {
       CheckIn: now,
       status: isLate ? "LATE" : "PRESENT",
     });
+
+    await inngest.send({
+      name:"employee/check-out",
+      data:{
+        employeeId:employee._id, attendenceId:attendance._id
+      }
+    })
     return res.status(201).json({ message: "Check-in successful", attendance: newAttendance });
   } else if (attendance.checkOut) {
       const checkInTime = new Date(attendance.checkIn).getTime();
@@ -55,6 +63,7 @@ if (!attendance) {
       attendance.dayType = dayType;
 
       await attendance.save();
+
 
       return res.status(200).json({ message: "Check-out successful", attendance });
     }  else {

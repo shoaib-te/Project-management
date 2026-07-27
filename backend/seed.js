@@ -37,6 +37,8 @@ async function registerAdmin() {
         await newAdmin.save();
         
         console.log('Admin user registered successfully!');
+        console.log('/nemail:',ADMIN_EMAIL);
+        console.log('password:',temporaryPassword);
         process.exit(0);
 
     } catch (error) {
