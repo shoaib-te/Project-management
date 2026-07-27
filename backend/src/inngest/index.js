@@ -1,13 +1,13 @@
-import sendEmail from "../config/Nodemailer";
-import Attendance from "../module/Attendances.module";
-import Employee from "../module/Employee.module";
-import LeaveApplication from "../module/Leaveapplaction.module";
+const sendEmail = require("../config/Nodemailer")
+const Attendance = require("../module/Attendances.module");
+const Employee = require("../module/Employee.module");
+const LeaveApplication = require("../module/Leaveapplaction.module");
 
-// Unified Modern SDK ESM import format
-import { Inngest } from "inngest";
+// Unified Modern SDK CommonJS require format
+const { Inngest } = require("inngest");
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "fullstacksystem" });
+const inngest = new Inngest({ id: "fullstacksystem" });
 
 // 1. Auto Check-out Function
 const outocheckout = inngest.createFunction(
@@ -174,6 +174,9 @@ const attendenceRemindercron = inngest.createFunction(
     </div>`,
           });
         });
+        
+        // Wait for all mail actions inside the step to execute
+        await Promise.all(emailPromises);
       });
     }
 
@@ -186,9 +189,12 @@ const attendenceRemindercron = inngest.createFunction(
   },
 );
 
-// Unified output declaration array mapping internal function objects
-export const functions = [
-  outocheckout,
-  leaveapplectionReminder,
-  attendenceRemindercron,
-];
+// Unified output mapping internal function objects via CommonJS exports
+module.exports = {
+  inngest,
+  functions: [
+    outocheckout,
+    leaveapplectionReminder,
+    attendenceRemindercron,
+  ]
+};
