@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials in password" });
 
     const payload = {
       userId: user._id.toString(),
@@ -44,21 +44,12 @@ exports.login = async (req, res) => {
       user: payload,
     });
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// 3. Logout User
-exports.logout = async (req, res) => {
-  // Stateless JWTs cannot be invalidated by the server natively.
-  // Client-side application must delete the token from its storage (localStorage/cookies).
-  res
-    .status(200)
-    .json({
-      message:
-        "Logged out successfully. Please clear your token from client storage.",
-    });
-};
 
 exports.session = async (req, res) => {
   // 1. Check if the session exists AND your custom user property is set

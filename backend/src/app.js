@@ -21,7 +21,7 @@ app.use(morgan('dev'));
 
 // Grouped API Routes (V1)
 const apiRouter = express.Router();
-app.use('/v1/api', apiRouter);
+app.use('/api', apiRouter);
 
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/employees', employeeRoutes);
