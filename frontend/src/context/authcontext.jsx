@@ -1,44 +1,70 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiClient from '../lib/axios';
+import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null); // Added token state
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [token, setToken] = useState(() => localStorage.getItem("token")); 
+  const [loading, setLoading] = useState(true);
 
-  const refreshSession = async () => {
+  // 1. Defined first so refreshSession can safely invoke it
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    setUser(null);
+    setToken(null);
+    setLoading(false);
+  }, []);
+
+  // 2. Uses the token already attached by your interceptor
+  const refreshSession = useCallback(async () => {
+    const storedToken = localStorage.getItem("token");
+    
+    if (!storedToken) {
+      setUser(null);
+      setToken(null);
+      setLoading(false);
+      return;
+    }
+
     try {
-      setLoading(true);
-     const {data}= await apiClient.get()
-      
-      // setUser(data.user);
-      // setToken(data.token);
+      const response = await axios.get('/api/auth/session');
+      setUser(response.data.user);
     } catch (error) {
-      console.error("Session refresh failed", error);
+      toast.error("Session expired. Please log in again.");
       logout();
     } finally {
       setLoading(false);
     }
+  }, [logout]);
+
+  const login = async ({ email, password, roletype } ) => {
+    
+    console.log({ email, password, roletype } );
+    try {
+      const response = await apiClient.post('http://localhost:3000/api/auth/login',{ email, password, roletype } );
+      console.log(response);
+      
+      const { user: userData, token: userToken } = response.data;
+
+      // Interceptor will automatically pick this up for subsequent requests
+      localStorage.setItem("token", userToken);
+      
+      setUser(userData);
+      setToken(userToken);
+      return response;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed");
+      throw error;
+    }
   };
 
-  const login = (userData, userToken) => {
-    setUser(userData);
-    setToken(userToken);
-    setLoading(false);
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    setLoading(false);
-  };
-
-  // Run session check once when app loads
+  // 3. Runs exactly once on application mount
   useEffect(() => {
     refreshSession();
-  }, []);
+  }, [refreshSession]);
 
   return (
     <AuthContext.Provider value={{ user, token, loading, login, logout, refreshSession }}>
@@ -48,5 +74,9 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

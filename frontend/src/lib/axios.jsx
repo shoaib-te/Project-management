@@ -1,9 +1,12 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://api.yourdomain.com',
-  timeout: 5000 // Stops requests if server stalls for 5 seconds
+ baseURL: import.meta.env.VITE_BACKEND_URL,
+
+
+
 });
+
 
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');

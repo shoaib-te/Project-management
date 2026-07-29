@@ -3,17 +3,19 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/login";
 import Sidebar from "./components/Sidebar";
 import Landing from "./pages/Landing";
-import { Toaster } from "sonner";
 import Leave from "./pages/Leave";
 import Payslip from "./pages/Payslip";
 import Settings from "./pages/Settings";
 import Employee from "./pages/Employee";
 import Attendance from "./pages/Attensdance";
 import PlayslipPrint from "./pages/PlayslipPrint";
+import { useAuth } from "./context/Authcontext";
+import { Toaster } from 'react-hot-toast';
 
 function Layout() {
+  const {user}=useAuth()
   // Replace this hardcoded string with your actual auth state (e.g., Redux, Context, or localStorage)
-  const user = "shoaib"; 
+   
   const location = useLocation();
   // const [isOpen, setIsOpen] = useState(false);
 
@@ -83,7 +85,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       
-      <Toaster />
+      <Toaster position="top-right" reverseOrder={false} />
     </main>
   );
 }

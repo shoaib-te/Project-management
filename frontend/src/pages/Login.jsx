@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/Authcontext';
+import toast from 'react-hot-toast';
 
 export default function LoginForm({ role, title, subtitle }) {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // Added loading state
+  const { login } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Dynamically handle login behavior based on the passed role prop
-    console.log(`Logging into ${role} panel with:`, { email, password });
     
-    // Matches the layout route wrapper configuration
-    if (role === 'admin') {
-      navigate('/dashboard');
-    } else {
-      navigate('/dashboard');
-    }
+      await login({ email, password, roletype:role } );
+      
+      toast.success('Successfully logged in!');
+      navigate('/dashboard')
   };
 
   return (
@@ -75,10 +76,11 @@ export default function LoginForm({ role, title, subtitle }) {
                 id="email"
                 type="email"
                 required
+                disabled={isSubmitting}
                 placeholder={role === 'admin' ? 'admin@organization.com' : 'john@example.com'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm placeholder-slate-300 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm placeholder-slate-300 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100 disabled:opacity-60"
               />
             </div>
 
@@ -91,13 +93,15 @@ export default function LoginForm({ role, title, subtitle }) {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
+                  disabled={isSubmitting}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50/50 pl-4 pr-11 py-3 text-sm placeholder-slate-300 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50/50 pl-4 pr-11 py-3 text-sm placeholder-slate-300 outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100 disabled:opacity-60"
                 />
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
@@ -108,9 +112,10 @@ export default function LoginForm({ role, title, subtitle }) {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 active:scale-[0.98]"
+              disabled={isSubmitting}
+              className="w-full rounded-lg bg-indigo-600 py-3 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-indigo-500 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Sign in
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
 
