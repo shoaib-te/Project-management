@@ -1,6 +1,8 @@
 const User = require("../module/User.module");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const cookieParser = require('cookie-parser')
+
 
 // Secret key for JWT (Move this to an environment variable in production)
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -38,6 +40,12 @@ exports.login = async (req, res) => {
     // Generate Token
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
+     res.cookie('token', token, {
+    httpOnly: true,  // Prevents XSS attacks (JavaScript cannot read it)
+    secure: true,    // Requires HTTPS (use false in local development)
+    sameSite: 'strict', // Prevents CSRF attacks
+    maxAge: 3600000  // Cookie expiration time in milliseconds (1 hour)
+  });
     res.status(200).json({
       message: "Login successful",
       token,
@@ -52,14 +60,14 @@ exports.login = async (req, res) => {
 
 
 exports.session = async (req, res) => {
-  // 1. Check if the session exists AND your custom user property is set
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ message: "Unauthorized" });
+  
+  if (!req.session ) {
+    return res.status(401).json({ message: "Unauthorized in controller" });
   }
 
-  // 2. Return only the safe user data stored in the session
+  // Return only the safe user data from the verified token.
   return res.json({
-    user: req.session.user,
+    user: req.session,
   });
 };
 

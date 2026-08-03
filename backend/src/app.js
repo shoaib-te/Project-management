@@ -10,6 +10,7 @@ const attendanceRoutes = require('./router/attendancess.route');
 const leaveRoutes = require('./router/Leaves.route');
 const payslipsRoutes = require('./router/Payslips.route');
 const dashbordRoutes = require('./router/dashbord.route');
+const  cookieParser = require('cookie-parser')
 
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.use(cookieParser()); // Middleware to parse cookies
 // Grouped API Routes (V1)
 const apiRouter = express.Router();
 app.use('/api', apiRouter);

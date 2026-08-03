@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/Authcontext';
 import toast from 'react-hot-toast';
+import Loading from './Loading';
 
 export default function LoginForm({ role, title, subtitle }) {
   const navigate = useNavigate();
@@ -10,17 +11,26 @@ export default function LoginForm({ role, title, subtitle }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false); // Added loading state
-  const { login } = useAuth();
+  const { login,user,loading } = useAuth();
+
+  if (loading) return <Loading />;
+  if (user) {
+    return <Navigate to="/dashboard" replace={true} />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    
-      await login({ email, password, roletype:role } );
-      
+
+    try {
+      await login({ email, password, roletype: role });
       toast.success('Successfully logged in!');
-      navigate('/dashboard')
+      navigate('/dashboard');
+    } catch (error) {
+      // Error toast is already shown inside login(); just reset submit state.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -1,13 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiClient from '../lib/axios';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem("token")); 
+  const [token, setToken] = useState(localStorage.getItem("token")); 
   const [loading, setLoading] = useState(true);
 
   // 1. Defined first so refreshSession can safely invoke it
@@ -20,9 +19,9 @@ export function AuthProvider({ children }) {
 
   // 2. Uses the token already attached by your interceptor
   const refreshSession = useCallback(async () => {
-    const storedToken = localStorage.getItem("token");
-    
-    if (!storedToken) {
+    const storedToken = localStorage.getItem("token")
+    console.log('Refreshing session with token:', storedToken); // Debugging line
+    if ( !storedToken) {
       setUser(null);
       setToken(null);
       setLoading(false);
@@ -30,8 +29,11 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const response = await axios.get('/api/auth/session');
+      // Use apiClient so the VITE_BACKEND_URL baseURL and the
+      // Authorization Bearer token interceptor are both applied.
+      const response = await apiClient.get('/api/auth/session');
       setUser(response.data.user);
+      console.log('Session refreshed:', response.data.user);  
     } catch (error) {
       toast.error("Session expired. Please log in again.");
       logout();
@@ -40,18 +42,17 @@ export function AuthProvider({ children }) {
     }
   }, [logout]);
 
-  const login = async ({ email, password, roletype } ) => {
-    
-    console.log({ email, password, roletype } );
+  const login = async ({ email, password, roletype }) => {
     try {
-      const response = await apiClient.post('http://localhost:3000/api/auth/login',{ email, password, roletype } );
-      console.log(response);
-      
+      // Use apiClient so the VITE_BACKEND_URL baseURL is applied.
+      const response = await apiClient.post('/api/auth/login', { email, password, roletype });
+
       const { user: userData, token: userToken } = response.data;
 
       // Interceptor will automatically pick this up for subsequent requests
       localStorage.setItem("token", userToken);
-      
+   
+
       setUser(userData);
       setToken(userToken);
       return response;

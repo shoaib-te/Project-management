@@ -10,11 +10,14 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/Authcontext';
+import apiClient from '../lib/axios';
+import toast from 'react-hot-toast';
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation(); // Hook to check current active URL
-
+  const { user,loading,logout } = useAuth(); // Assuming you have a useAuth hook to get the current user
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
@@ -22,11 +25,28 @@ export default function Sidebar() {
     { name: 'Payslips', icon: CircleDollarSign, path: '/payslips' },
     { name: 'Settings', icon: Settings, path: '/settings' },
   ];
+  const [username, setUsername] = React.useState('');
+
+  useEffect(() => {
+     apiClient.get('/api/profiles')
+      .then(response => {
+        setUsername(response.data.user.name);
+        console.log('Fetched user data:', response.data.user);
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+        toast.error("Failed to fetch user data.");
+      });
+  }, []);
+
 
   const handleLogout = () => {
     // Clear tokens/session data here if needed
+    logout();
     navigate('/login');
+    toast.success('logout is successfull ')
   };
+
 
   return (
     <aside className="flex h-screen w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">

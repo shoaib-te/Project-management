@@ -1,10 +1,18 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react'; // Install lucide-react or use standard SVG arrows
 import { useNavigate } from 'react-router-dom';
+import Loading from './Loading';
+import { useAuth } from '../context/Authcontext';
 
 export default function Landing() {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
+  // const { user,loading } = useAuth();
+  // if (loading) return <Loading />;
+  // if (user) {
+  //   navigate("/dashboard");
+  // }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col md:flex-row bg-white font-sans selection:bg-indigo-200">

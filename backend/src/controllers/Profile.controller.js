@@ -4,9 +4,8 @@ const Employee = require("../module/Employee.module");
 const getProfile = (req, res) => {
   try {
     const session = req.session;
-    if (!session || !session.userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+
+    
     const employee = Employee.findById(session.userId).select('-password');
     if (!employee) {
       return res.json({

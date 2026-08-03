@@ -2,19 +2,11 @@ import axios from 'axios';
 
 const apiClient = axios.create({
  baseURL: import.meta.env.VITE_BACKEND_URL,
-
-
+ withCredentials: true, // This allows cookies to be sent with requests
 
 });
 
 
-apiClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 
 export default apiClient;
