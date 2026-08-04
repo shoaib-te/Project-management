@@ -26,11 +26,12 @@ export function AuthProvider({ children }) {
       setToken(null);
       setLoading(false);
       return;
-    }
+    }else {
 
     try {
       // Use apiClient so the VITE_BACKEND_URL baseURL and the
       // Authorization Bearer token interceptor are both applied.
+    
       const response = await apiClient.get('/api/auth/session');
       setUser(response.data.user);
       console.log('Session refreshed:', response.data.user);  
@@ -40,6 +41,7 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
+  }
   }, [logout]);
 
   const login = async ({ email, password, roletype }) => {

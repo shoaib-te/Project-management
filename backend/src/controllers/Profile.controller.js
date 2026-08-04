@@ -1,12 +1,14 @@
 const Employee = require("../module/Employee.module");
 
 
-const getProfile = (req, res) => {
+const getProfile = async (req, res) => {
   try {
     const session = req.session;
-
+    if (!session || !session.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     
-    const employee = Employee.findById(session.userId).select('-password');
+    const employee =await Employee.findById(session.userId).select('-password');
     if (!employee) {
       return res.json({
         firstName: 'Admin',
@@ -19,6 +21,7 @@ const getProfile = (req, res) => {
     
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+    console.log(error);
   }
 };
 
