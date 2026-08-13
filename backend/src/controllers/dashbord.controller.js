@@ -6,9 +6,9 @@ const PayslipsModule = require("../module/Payslips.module");
 
 // controller in admin and employee dashbord
 
-const dashbordcontroller = async () => {
+const dashbordcontroller = async (req,res) => {
   try {
-    const session = res.session;
+    const session = req.session;
     if (session.role === "admin") {
       const [totalEmployee, todayAttendances, pendingleave] = await Promise.all(
         [
@@ -30,7 +30,7 @@ const dashbordcontroller = async () => {
         totalDepartments: DEPARTMENTS.length,
       });
     } else {
-        const employee=Employee.findOne({
+        const employee= await Employee.findOne({
           userId:session.userId
         }).lean();
         if(!employee){
@@ -70,6 +70,7 @@ const dashbordcontroller = async () => {
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });
+    console.error("Error in dashbordcontroller:", error);
   }
 };
 

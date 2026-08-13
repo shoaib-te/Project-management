@@ -1,14 +1,5 @@
-import React, { useEffect } from 'react';
-import { 
-  LayoutDashboard, 
-  CalendarDays, 
-  FileText, 
-  CircleDollarSign, 
-  Settings, 
-  LogOut, 
-  User2,
-  ChevronRight
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { LayoutDashboard, CalendarDays, FileText, CircleDollarSign, Settings, LogOut, User2, ChevronRight, Menu, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/Authcontext';
 import apiClient from '../lib/axios';
@@ -16,22 +7,26 @@ import toast from 'react-hot-toast';
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const location = useLocation(); // Hook to check current active URL
-  const { user,loading,logout } = useAuth(); // Assuming you have a useAuth hook to get the current user
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  const [username, setUsername] = useState('');
+  const [isOpenMobile, setIsOpenMobile] = useState(false); // 1. Default to false so drawer is closed on load
+
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-    { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
+      user?.role === 'admin' 
+      ? { name: 'Employee', icon: User2, path: '/employee' }
+      : { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
     { name: 'Leave', icon: FileText, path: '/leave' },
     { name: 'Payslips', icon: CircleDollarSign, path: '/payslips' },
     { name: 'Settings', icon: Settings, path: '/settings' },
+     
   ];
-  const [username, setUsername] = React.useState('');
 
   useEffect(() => {
-     apiClient.get('/api/profiles')
+    apiClient.get('/api/profiles')
       .then(response => {
-        setUsername(response.data.user.name);
-        console.log('Fetched user data:', response.data.user);
+        setUsername(response.data.firstName + ' ' + response.data.lastName);
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
@@ -39,19 +34,21 @@ export default function Sidebar() {
       });
   }, []);
 
+  // 2. Automatically close the drawer overlay whenever a link is clicked
+  useEffect(() => {
+    setIsOpenMobile(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
-    // Clear tokens/session data here if needed
     logout();
     navigate('/login');
-    toast.success('logout is successfull ')
+    toast.success('Logout is successful');
   };
 
+  const role = user?.role || 'employee';
 
-  return (
-    <aside className="flex h-screen w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">
-      
-      {/* Top Section */}
+  const SidebarContent = () => (
+    <aside className="flex w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">
       <div>
         {/* App Branding */}
         <div className="flex items-center gap-3 px-2 py-4 mb-4">
@@ -67,49 +64,48 @@ export default function Sidebar() {
         {/* Profile Card */}
         <div className="flex items-center gap-3 rounded-xl bg-slate-900/40 p-3 mb-8 border border-slate-900">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 text-xs font-semibold text-white">
-            J
+            {username ? username.charAt(0).toUpperCase() : 'A'}
           </div>
           <div>
-            <h2 className="text-xs font-semibold text-white">John Doe</h2>
-            <p className="text-[10px] text-slate-500 font-medium mt-0.5">Employee</p>
+            <h2 className="text-xs font-semibold text-white">{username || 'Admin'}</h2>
+            {role === 'admin' ? (
+              <p className="text-[10px] text-slate-500 font-medium mt-0.5">Administrator</p>
+            ) : (
+              <p className="text-[10px] text-slate-500 font-medium mt-0.5">Employee</p>
+            )}
           </div>
         </div>
 
-        {/* Navigation Category Label */}
+        {/* Navigation Label */}
         <div className="px-2 mb-3">
           <span className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">
             Navigation
           </span>
         </div>
 
-        {/* Menu Navigation List */}
+        {/* Menu Navigation */}
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            // Check if the item's path matches the current URL route path
             const isActive = location.pathname === item.path;
-
             return (
               <button
                 key={item.name}
                 type="button"
-                onClick={() => navigate(item.path)} // Action switches page view
+                onClick={() => navigate(item.path)}
                 className={`relative flex w-full items-center justify-between rounded-xl px-3 py-3 text-xs font-medium transition-all group duration-150 ${
                   isActive
                     ? 'bg-indigo-950/40 text-indigo-400 border border-indigo-900/30'
                     : 'text-slate-400 hover:bg-slate-900/30 hover:text-slate-200 border border-transparent'
                 }`}
               >
-                {/* Active Indicator Bar */}
                 {isActive && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-md bg-indigo-500" />
                 )}
-
                 <div className="flex items-center gap-3">
                   <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-300'}`} />
                   <span>{item.name}</span>
                 </div>
-
                 {isActive && <ChevronRight className="h-3 w-3 text-indigo-400" />}
               </button>
             );
@@ -117,7 +113,7 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Bottom Section: Logout Button */}
+      {/* Logout */}
       <div className="border-t border-slate-900/60 pt-4">
         <button
           type="button"
@@ -128,7 +124,51 @@ export default function Sidebar() {
           <span>Log out</span>
         </button>
       </div>
-
     </aside>
+  );
+
+  return (
+    <>
+      {/* 3. MOBILE HEADER (Unified break point to 'md') */}
+      <div className="flex items-center justify-between bg-[#0b0c1e] p-4 text-white md:hidden border-b border-slate-900 w-full fixed top-0 left-0 z-40 h-16">
+        <div className="flex items-center gap-2">
+          <User2 className="h-5 w-5 text-indigo-400" />
+          <span className="text-sm font-semibold tracking-wide">Employee MS</span>
+        </div>
+        <button
+          onClick={() => setIsOpenMobile(true)}
+          className="p-2 rounded-lg bg-slate-900 text-slate-300 hover:text-white"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Mobile spacer offset (Unified breakpoint to 'md') */}
+      <div className="md:hidden h-16 w-full" />
+
+      {/* 4. DESKTOP PERMANENT SIDEBAR */}
+      <div className="hidden md:flex h-screen sticky top-0">
+        <SidebarContent />
+      </div>
+
+      {/* 5. MOBILE SIDEBAR DRAWER OVERLAY */}
+      {isOpenMobile && (
+        <div className="fixed inset-0 z-50 flex md:hidden">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsOpenMobile(false)}
+          />
+          <div className="relative flex flex-col h-full animate-in slide-in-from-left duration-200">
+            <button
+              onClick={() => setIsOpenMobile(false)}
+              className="absolute top-4 right-[-48px] p-2 text-white bg-[#0b0c1e] rounded-r-xl border-y border-r border-slate-900"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <SidebarContent />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -14,28 +14,25 @@ import { Toaster } from 'react-hot-toast';
 import Loading from "./pages/Loading";
 
 function Layout() {
-  const {user,loading}=useAuth()
-  // Replace this hardcoded string with your actual auth state (e.g., Redux, Context, or localStorage)
-   
+  const { user, loading } = useAuth();
   const location = useLocation();
-  // const [isOpen, setIsOpen] = useState(false);
 
-  // If not logged in, redirect to the main landing/login selection page
-  if(loading)return <Loading/>
+  if (loading) return <Loading />;
+  
   return user ? (
-    <div className="w-full h-screen flex flex-col md:flex-row">
-      {/* Sidebar */}
-     
-      <div className=" h-screen bg-white sticky top-0 hidden  md:block">
-         <Sidebar />
+    <div className="w-full h-full flex flex-col md:flex-row bg-[#f3f4f6]">
+      {/* 1. Sidebar Component */}
+      <Sidebar />
 
-      </div>
+      {/* 2. Main Content Window Area */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        {/* 3. Mobile Top Header Safety Spacer */}
+        <div className="h-16 w-full md:hidden shrink-0" />
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4 2xl:px-10">
+        {/* 4. Active Route Viewer Inner Content */}
+        <main className="flex-1 p-4 md:p-6 2xl:p-10">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   ) : (
@@ -45,7 +42,7 @@ function Layout() {
 
 function App() {
   return (
-    <main className="w-full min-h-screen bg-[#f3f4f6]">
+    <main className="w-full h-full overflow-hidden bg-[#f3f4f6]">
       <Routes>
         {/* PROTECTED ROUTES (Require Layout & User Auth) */}
         <Route element={<Layout />}>
@@ -55,9 +52,8 @@ function App() {
           <Route path="/payslips" element={<Payslip />} />
           <Route path="/Settings" element={<Settings />} />
           <Route path="/Employee" element={<Employee />} />
-          <Route path="/Attendance" element={< Attendance />} />
-          <Route path="/playslip/:id" element={< PlayslipPrint />} />
-          
+          <Route path="/Attendance" element={<Attendance />} />
+          <Route path="/playslip/:id" element={<PlayslipPrint />} />
         </Route>
 
         {/* PUBLIC ROUTES (Accessible without logging in) */}
