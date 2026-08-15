@@ -27,6 +27,9 @@ export default function Sidebar() {
     apiClient.get('/api/profiles')
       .then(response => {
         setUsername(response.data.firstName + ' ' + response.data.lastName);
+
+        console.log(response.data);
+        
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
@@ -64,10 +67,10 @@ export default function Sidebar() {
         {/* Profile Card */}
         <div className="flex items-center gap-3 rounded-xl bg-slate-900/40 p-3 mb-8 border border-slate-900">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 text-xs font-semibold text-white">
-            {username ? username.charAt(0).toUpperCase() : 'A'}
+            {username? username.charAt(0).toUpperCase():'' }
           </div>
           <div>
-            <h2 className="text-xs font-semibold text-white">{username || 'Admin'}</h2>
+            <h2 className="text-xs font-semibold text-white">{username }</h2>
             {role === 'admin' ? (
               <p className="text-[10px] text-slate-500 font-medium mt-0.5">Administrator</p>
             ) : (

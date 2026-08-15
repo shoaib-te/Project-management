@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Employee = require("../module/Employee.module");
 
 
@@ -7,17 +8,21 @@ const getProfile = async (req, res) => {
     if (!session || !session.userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    
-    const employee =await Employee.findById(session.userId).select('-password');
-    if (!employee) {
-      return res.json({
-        firstName: 'Admin',
-        lastName: "",
-        email: session.email, 
 
-       });
+    const userIdObj = new mongoose.Types.ObjectId(session.userId);
+    
+    const employee =await Employee.findOne({ userId:userIdObj}).select('-password');
+    console.log(employee,userIdObj);
+    if(!employee){
+     return res.json({
+       firstName: 'Admain',
+    lastName: '',
+    email: session.email
+
+     })
     }
-    return res.status(200).json({employee});
+  
+    return res.status(200).json(employee);
     
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

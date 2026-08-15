@@ -1,23 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { Users, Building2, CalendarCheck, FileText, DollarSign, ArrowRight } from 'lucide-react';
-import apiClient from '../lib/axios';
-import { toast } from 'react-hot-toast';
+import React, { useEffect, useState } from "react";
+import {
+  Users,
+  Building2,
+  CalendarCheck,
+  FileText,
+  DollarSign,
+  ArrowRight,
+} from "lucide-react";
+import apiClient from "../lib/axios";
+import { toast } from "react-hot-toast";
+import { useCallback } from "react";
 
 function Dashboard() {
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState();
   const [loading, setLoading] = useState(true); // Added loading state
 
-  useEffect(() => {
-    apiClient.get('/api/dashbord')
-      .then(res => {
+  const fetchDashboard = useCallback(async () => {
+    await apiClient
+      .get("/api/dashbord")
+      .then((res) => {
         setDashboardData(res.data);
+
         setLoading(false);
+        console.log(dashboardData);
       })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        toast.error('Failed to fetch dashboard data');
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch dashboard data");
         setLoading(false);
       });
+  }, []);
+
+  useEffect(() => {
+    fetchDashboard();
   }, []);
 
   // 1. Prevent flashing the wrong UI while data is loading
@@ -31,17 +46,47 @@ function Dashboard() {
 
   // 2. Map Dynamic Admin Metrics (Fallback to '0' or static defaults if keys missing)
   const adminMetrics = [
-    { title: 'Total Employees', value: dashboardData?.totalEmployees ?? 0, icon: Users },
-    { title: 'Departments', value: dashboardData?.totalDepartments ?? 0, icon: Building2 },
-    { title: "Today's Attendance", value: dashboardData?.todayAttendance ?? 0, icon: CalendarCheck },
-    { title: 'Pending Leaves', value: dashboardData?.pendingLeaves ?? 0, icon: FileText },
+    {
+      title: "Total Employees",
+      value: dashboardData?.totalEmployee ?? 0,
+      icon: Users,
+    },
+    {
+      title: "Departments",
+      value: dashboardData?.totalDepartments ?? 0,
+      icon: Building2,
+    },
+    {
+      title: "Today's Attendance",
+      value: dashboardData?.todayAttendances ?? 0,
+      icon: CalendarCheck,
+    },
+    {
+      title: "Pending Leaves",
+      value: dashboardData?.pendingleave ?? 0,
+      icon: FileText,
+    },
   ];
 
   // 3. Map Dynamic Employee Metrics
   const employeeMetrics = [
-    { title: 'Days Present', value: dashboardData?.daysPresent ?? 0, icon: CalendarCheck },
-    { title: 'Pending Leaves', value: dashboardData?.employeePendingLeaves ?? 0, icon: FileText },
-    { title: 'Latest Payslip', value: dashboardData?.latestPayslip ? `$${dashboardData.latestPayslip}` : '$0', icon: DollarSign },
+    {
+      title: "Days Present",
+      value: dashboardData?.CurrentMonthAttendance ?? 0,
+      icon: CalendarCheck,
+    },
+    {
+      title: "Pending Leaves",
+      value: dashboardData?.PendingLeaves ?? 0,
+      icon: FileText,
+    },
+    {
+      title: "Latest Payslip",
+      value: dashboardData?.LatestPayslip
+        ? `$${dashboardData.LatestPayslip}`
+        : "$0",
+      icon: DollarSign,
+    },
   ];
 
   if (dashboardData?.role === "admin") {
@@ -51,12 +96,19 @@ function Dashboard() {
           <header className="space-y-1">
             <h1 className="text-2xl font-semibold text-gray-950">Dashboard</h1>
             <p className="text-sm text-gray-500">
-              Welcome back, <span className="font-medium text-gray-700">Admin</span> — here's your overview
+              Welcome back,{" "}
+              <span className="font-medium text-gray-700">Admin</span> — here's
+              your overview
             </p>
           </header>
           <div className="flex flex-wrap gap-4">
             {adminMetrics.map((item, index) => (
-              <DashboardCard key={index} title={item.title} value={item.value} icon={item.icon} />
+              <DashboardCard
+                key={index}
+                title={item.title}
+                value={item.value}
+                icon={item.icon}
+              />
             ))}
           </div>
         </div>
@@ -69,15 +121,23 @@ function Dashboard() {
           <header className="space-y-1">
             {/* Dynamic User Profile info */}
             <h1 className="text-2xl font-semibold text-gray-950">
-              Welcome, {dashboardData?.name || 'User'}!
+              Welcome, {dashboardData?.firstName || "User"}!
             </h1>
             <p className="text-sm text-gray-500">
-              {dashboardData?.designation || 'Employee'} - <span className="text-gray-400">{dashboardData?.department || 'Staff'}</span>
+              {dashboardData?.designation || "Employee"} -{" "}
+              <span className="text-gray-400">
+                {dashboardData?.department || "Staff"}
+              </span>
             </p>
           </header>
           <div className="flex flex-wrap gap-4">
             {employeeMetrics.map((item, index) => (
-              <DashboardCard key={index} title={item.title} value={item.value} icon={item.icon} />
+              <DashboardCard
+                key={index}
+                title={item.title}
+                value={item.value}
+                icon={item.icon}
+              />
             ))}
           </div>
           <div className="flex flex-wrap gap-3 pt-2">

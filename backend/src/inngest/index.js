@@ -1,40 +1,44 @@
-const sendEmail = require("../config/Nodemailer")
+const sendEmail = require("../config/Nodemailer");
 const Attendance = require("../module/Attendances.module");
 const Employee = require("../module/Employee.module");
 const LeaveApplication = require("../module/Leaveapplaction.module");
-
+require("dotenv").config();
 // Unified Modern SDK CommonJS require format
 const { Inngest } = require("inngest");
 
 // Create a client to send and receive events
-const inngest = new Inngest({ id: "fullstacksystem" });
+const inngest = new Inngest({ id: "fullstacksystem",
+  eventKey:process.env.DEFAULT_INGEST_KEY
+ });
 
 // 1. Auto Check-out Function
 const outocheckout = inngest.createFunction(
   {
     id: "outo-check-out",
-    // Configured modern v3/v4 triggers syntax array
     triggers: [{ event: "employee/check-out" }],
   },
   async ({ event, step }) => {
-    const { employeeId, attendenceId } = event.data;
+    // Standardized destructuring to match standard schema naming
+    const { employeeId, attendanceId } = event.data;
 
-    // Using robust relative string durations instead of unstable moving new Date() targets
+    // Sleep for 9 hours relative duration
     await step.sleep("wait-for-the-9-hours", "9h");
 
-    // Fetch and type evaluate attendance records
-    let attendence = await Attendance.findById(attendenceId);
-    if (!attendence?.checkout) {
+    // Fetch attendance record
+    let attendance = await Attendance.findById(attendanceId);
+    if (!attendance?.checkout) {
       const employee = await Employee.findById(employeeId);
 
-      // TODO: Implement actual user notification engine dispatch here
+      // Safely parse date to handle String, Timestamp, or Date instances
+      const checkInTime = new Date(attendance?.checkIn).toLocaleTimeString();
+
       await sendEmail({
         to: employee.email,
         subject: "Attendance Check-Out Reminder",
         body: `<div style="max-width: 600px;">
     <h2>Hi ${employee.firstName}, 👋🏼</h2>
     <p style="font-size: 16px;">You have an active check-in session for ${employee.department} today:</p>
-    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${attendance?.checkIn?.toLocaleTimeString()}</p>
+    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${checkInTime}</p>
     <p style="font-size: 16px;">Please make sure to check-out within the next hour.</p>
     <p style="font-size: 16px;">If you have any questions, please contact your admin.</p>
     <br />
@@ -45,18 +49,18 @@ const outocheckout = inngest.createFunction(
 
       await step.sleep("wait-for-the-1-hours", "1h");
 
-      // Re-fetch and check attendance again (Removed duplicate blocking const keyword)
-      attendence = await Attendance.findById(attendenceId);
-      if (!attendence?.checkout) {
-        attendence.checkout =
-          new Date(attendence.checkIn).getTime() + 4 * 60 * 60 * 1000;
-        attendence.workingHours = 4;
-        attendence.dayType = "Half Day";
-        attendence.status = "LATE";
-        await attendence.save();
+      // Re-fetch and update attendance if still not checked out
+      attendance = await Attendance.findById(attendanceId);
+      if (!attendance?.checkout) {
+        attendance.checkout =
+          new Date(attendance.checkIn).getTime() + 4 * 60 * 60 * 1000;
+        attendance.workingHours = 4;
+        attendance.dayType = "Half Day";
+        attendance.status = "LATE";
+        await attendance.save();
       }
     }
-  },
+  }
 );
 
 // 2. Admin Leave Application Reminder Function
@@ -66,22 +70,23 @@ const leaveapplectionReminder = inngest.createFunction(
     triggers: [{ event: "leave/pending" }],
   },
   async ({ event, step }) => {
-    const { leaveapplactionId } = event.data;
+    const { leaveApplicationId } = event.data;
 
     await step.sleep("wait-for-the-24-hours", "24h");
 
-    const leaveapplaction = await LeaveApplication.findById(leaveapplactionId);
-    if (leaveapplaction && leaveapplaction.status === "PENDING") {
-      const employee = await Employee.findById(leaveapplaction.employeeId);
-      // TODO: Add notification handler targeting admin profile
+    const leaveApplication = await LeaveApplication.findById(leaveApplicationId);
+    if (leaveApplication && leaveApplication.status === "PENDING") {
+      const employee = await Employee.findById(leaveApplication.employeeId);
+
+      const startDateFormatted = new Date(leaveApplication?.startDate).toLocaleDateString();
 
       await sendEmail({
         to: process.env.ADMIN_EMAIL,
         subject: `Leave Application Reminder`,
         body: `<div style="max-width: 600px;">
     <h2>Hi Admin, 👋🏼</h2>
-    <p style="font-size: 16px;">You have a pending leave application from the ${employee.department} department today:</p>
-    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">Start Date: ${leaveapplaction?.startDate?.toLocaleDateString()}</p>
+    <p style="font-size: 16px;">You have a pending leave application from the ${employee?.department || "N/A"} department today:</p>
+    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">Start Date: ${startDateFormatted}</p>
     <p style="font-size: 16px;">Please make sure to take action on this leave application.</p>
     <br />
     <p style="font-size: 16px;">Best Regards,</p>
@@ -89,21 +94,21 @@ const leaveapplectionReminder = inngest.createFunction(
   </div>`,
       });
     }
-  },
+  }
 );
 
 // 3. Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employees
 const attendenceRemindercron = inngest.createFunction(
   {
     id: "attendence-reminder-cron",
-    triggers: [{ cron: "0 0 6 * * *" }], // Modern configuration syntax mapping
+    triggers: [{ cron: "0 0 6 * * *" }],
   },
   async ({ step }) => {
-    // Step 1: Compute absolute boundary ranges mapping target timezones safely
+    // Step 1: Compute absolute boundary ranges
     const today = await step.run("get-today-date", () => {
       const startUTC = new Date(
         new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }) +
-          "T00:00:00+05:30",
+          "T00:00:00+05:30"
       );
       const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
       return {
@@ -121,14 +126,13 @@ const attendenceRemindercron = inngest.createFunction(
 
       return employees.map((e) => ({
         _id: e._id.toString(),
-        firstName: e.firstName,
-        lastName: e.lastName,
+        name: `${e.firstName || ""} ${e.lastName || ""}`.trim(),
         email: e.email,
         department: e.department,
       }));
     });
 
-    // Step 3: Fetch active approved leave scopes (Safely flattened outside Step 2 block)
+    // Step 3: Fetch active approved leave scopes
     const onLeaveIds = await step.run("get-on-leave-ids", async () => {
       const leaves = await LeaveApplication.find({
         status: "APPROVED",
@@ -156,11 +160,10 @@ const attendenceRemindercron = inngest.createFunction(
       return !isCheckedIn && !isOnLeave;
     });
 
-    // Step 6: Dispatch async loop resolving promise operations concurrently
+    // Step 6: Dispatch emails concurrently
     if (absentEmployees.length > 0) {
       await step.run("send-reminder-emails", async () => {
         const emailPromises = absentEmployees.map((emp) => {
-          // TODO: Wrap with your configured corporate mail dispatcher function
           return sendEmail({
             to: emp.email,
             subject: `Attendance Reminder – Please Mark Your Attendance`,
@@ -174,8 +177,7 @@ const attendenceRemindercron = inngest.createFunction(
     </div>`,
           });
         });
-        
-        // Wait for all mail actions inside the step to execute
+
         await Promise.all(emailPromises);
       });
     }
@@ -186,15 +188,11 @@ const attendenceRemindercron = inngest.createFunction(
       checkedIn: checkedInIds.length,
       absent: absentEmployees.length,
     };
-  },
+  }
 );
 
 // Unified output mapping internal function objects via CommonJS exports
 module.exports = {
   inngest,
-  functions: [
-    outocheckout,
-    leaveapplectionReminder,
-    attendenceRemindercron,
-  ]
+  functions: [outocheckout, leaveapplectionReminder, attendenceRemindercron],
 };
