@@ -47,8 +47,10 @@ exports.createPayslip = async (req, res) => {
 
 // Get all payslips with employee details populated
 exports.getAllPayslips = async (req, res) => {
+      const session = req.session;
   try {
-    const session = req.session;
+    console.log(session);
+    
     const isAdmin = session.role === "admin";
     if (isAdmin) {
       const payslips = await Payslip.find()
@@ -70,7 +72,7 @@ exports.getAllPayslips = async (req, res) => {
       if (!employee) {
         return res.status(404).json({ message: "Employee not found" });
       }
-      const payslips = PayslipsModule.find({ employeeId: employee._id }).sort({
+      const payslips = await PayslipsModule.find({ employeeId: employee._id }).sort({
         createdAt: -1,
       });
 
@@ -79,6 +81,8 @@ exports.getAllPayslips = async (req, res) => {
         .json({ success: true,  data: payslips });
     }
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ success: false, message: error.message });
   }
 };

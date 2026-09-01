@@ -36,28 +36,42 @@ const getProfile = async (req, res) => {
 // update profile
 // put /api/profile
 const updateProfile = async (req, res) => {
+  const { bio } = req.body;
+  
+  
   try {
     const session = req.session;
+    console.log(req.session.userId);
+    
     if (!session || !session.userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const employee = await Employee.findById(session.userId);
+
+    const employee = await Employee.findOne({userId:session.userId});
+    
     if (!employee) {
       return res.status(404).json({ message: "Employee not found" });
     }
-    if(Employee.isDeleted){
-        return res.status(404).json({ message: "your account is deactivated " });
+
+    if (employee.isDeleted) {
+      return res.status(404).json({ message: "Your account is deactivated" });
     }
 
-    await Employee.findByIdAndUpdate(employee._id, req.body.bio, { new: true });
-    return res.status(200).json({ message: "Profile updated successfully" });
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      employee._id,
+      { bio },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      employee: updatedEmployee
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.log(error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
-
-
-
-}
+};
 
 
 module.exports = {

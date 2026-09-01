@@ -15,14 +15,14 @@ router.post("/", authmiddleware, adminmiddleware, payslipController.createPaysli
  * @desc    Retrieve a list of all payslips
  * @access  Public / Private (Consider adding authmiddleware here to protect data)
  */
-router.get("/", payslipController.getAllPayslips);
+router.get("/",authmiddleware, payslipController.getAllPayslips);
 
 /**
  * @route   GET /api/payslips/:id
  * @desc    Get details of a specific payslip by its ID
  * @access  Public / Private (Consider adding authmiddleware here to protect data)
  */
-router.get("/:id", payslipController.getPayslipById);
+router.get("/:id", authmiddleware, payslipController.getPayslipById);
 
 /**
  * @route   DELETE /api/payslips/:id

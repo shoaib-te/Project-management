@@ -22,7 +22,7 @@ function Dashboard() {
         setDashboardData(res.data);
 
         setLoading(false);
-        console.log(dashboardData);
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -82,8 +82,8 @@ function Dashboard() {
     },
     {
       title: "Latest Payslip",
-      value: dashboardData?.LatestPayslip
-        ? `$${dashboardData.LatestPayslip}`
+      value: dashboardData?.LatestPayslip?.baseSalary
+        ? `$${dashboardData.LatestPayslip?.baseSalary}`
         : "$0",
       icon: DollarSign,
     },

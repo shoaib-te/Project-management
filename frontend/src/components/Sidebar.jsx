@@ -10,26 +10,22 @@ export default function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [username, setUsername] = useState('');
-  const [isOpenMobile, setIsOpenMobile] = useState(false); // 1. Default to false so drawer is closed on load
+  const [isOpenMobile, setIsOpenMobile] = useState(false);
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-      user?.role === 'admin' 
+    user?.role === 'admin' 
       ? { name: 'Employee', icon: User2, path: '/employee' }
       : { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
     { name: 'Leave', icon: FileText, path: '/leave' },
     { name: 'Payslips', icon: CircleDollarSign, path: '/payslips' },
     { name: 'Settings', icon: Settings, path: '/settings' },
-     
   ];
 
   useEffect(() => {
     apiClient.get('/api/profiles')
       .then(response => {
         setUsername(response.data.firstName + ' ' + response.data.lastName);
-
-        console.log(response.data);
-        
       })
       .catch(error => {
         console.error('Error fetching user data:', error);
@@ -37,7 +33,6 @@ export default function Sidebar() {
       });
   }, []);
 
-  // 2. Automatically close the drawer overlay whenever a link is clicked
   useEffect(() => {
     setIsOpenMobile(false);
   }, [location.pathname]);
@@ -51,7 +46,8 @@ export default function Sidebar() {
   const role = user?.role || 'employee';
 
   const SidebarContent = () => (
-    <aside className="flex w-64 flex-col bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">
+    // FIX: Using full height h-full inside container wrappers to allow natural parent document flow
+    <aside className="flex w-64 flex-col h-full bg-[#0b0c1e] text-slate-300 font-sans p-4 border-r border-slate-900 justify-between select-none shrink-0">
       <div>
         {/* App Branding */}
         <div className="flex items-center gap-3 px-2 py-4 mb-4">
@@ -67,10 +63,10 @@ export default function Sidebar() {
         {/* Profile Card */}
         <div className="flex items-center gap-3 rounded-xl bg-slate-900/40 p-3 mb-8 border border-slate-900">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 text-xs font-semibold text-white">
-            {username? username.charAt(0).toUpperCase():'' }
+            {username ? username.charAt(0).toUpperCase() : ''}
           </div>
           <div>
-            <h2 className="text-xs font-semibold text-white">{username }</h2>
+            <h2 className="text-xs font-semibold text-white">{username}</h2>
             {role === 'admin' ? (
               <p className="text-[10px] text-slate-500 font-medium mt-0.5">Administrator</p>
             ) : (
@@ -132,7 +128,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* 3. MOBILE HEADER (Unified break point to 'md') */}
+      {/* MOBILE HEADER */}
       <div className="flex items-center justify-between bg-[#0b0c1e] p-4 text-white md:hidden border-b border-slate-900 w-full fixed top-0 left-0 z-40 h-16">
         <div className="flex items-center gap-2">
           <User2 className="h-5 w-5 text-indigo-400" />
@@ -146,15 +142,16 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Mobile spacer offset (Unified breakpoint to 'md') */}
+      {/* Mobile spacer offset */}
       <div className="md:hidden h-16 w-full" />
 
-      {/* 4. DESKTOP PERMANENT SIDEBAR */}
-      <div className="hidden md:flex h-screen sticky top-0">
+      {/* DESKTOP PERMANENT SIDEBAR */}
+      {/* FIX: Set strict viewport heights and explicit position attachments to anchor correctly alongside long dynamic layout wrappers */}
+      <div className="hidden md:flex h-screen sticky top-0 left-0 z-30 shrink-0">
         <SidebarContent />
       </div>
 
-      {/* 5. MOBILE SIDEBAR DRAWER OVERLAY */}
+      {/* MOBILE SIDEBAR DRAWER OVERLAY */}
       {isOpenMobile && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div

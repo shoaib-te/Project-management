@@ -20,7 +20,6 @@ export function AuthProvider({ children }) {
   // 2. Uses the token already attached by your interceptor
   const refreshSession = useCallback(async () => {
     const storedToken = localStorage.getItem("token")
-    console.log('Refreshing session with token:', storedToken); // Debugging line
     if ( !storedToken) {
       setUser(null);
       setToken(null);
@@ -34,7 +33,6 @@ export function AuthProvider({ children }) {
     
       const response = await apiClient.get('/api/auth/session');
       setUser(response.data.user);
-      console.log('Session refreshed:', response.data.user);  
     } catch (error) {
       toast.error("Session expired. Please log in again.");
       logout();

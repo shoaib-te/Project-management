@@ -6,8 +6,10 @@ const Employee = require("../module/Employee.module");
 const clockinoutcontroller = async (req, res) => {
   try {
     const session = req.session;
-    // CRITICAL FIX: Make sure to select 'isDeleted' so your conditional check works
-    const employee = await Employee.findOne({ userId: session.userId }).select('_id isDeleted');
+    
+    // Select only needed fields to optimize DB memory footprint
+    const employee = await Employee.findOne({ userId: session.userId })
+      .select('_id isDeleted');
     
     if (!employee) {
       return res.status(404).json({ message: "Employee not found" });
@@ -17,20 +19,23 @@ const clockinoutcontroller = async (req, res) => {
       return res.status(403).json({ message: "Your account is deactivated" });
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    // Fix: Clear time boundaries safely using UTC or your target timezone
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
     
+    // Search using the unified date boundary
     const attendance = await Attendance.findOne({
       employeeId: employee._id,
       date: today,
     });
 
-    const now = new Date();
-
     // CASE 1: No attendance record today -> Clock In
     if (!attendance) {
-      const isLate = (now.getHours() * 60 + now.getMinutes()) > (9 * 60); 
-
+      // Calculate minutes since midnight relative to the employee's timezone
+      // Example targets 09:00 AM local time boundary
+      const currentMinutes = (now.getHours() * 60) + now.getMinutes(); 
+      const isLate = currentMinutes > (9 * 60); 
+      
       const newAttendance = await Attendance.create({
         employeeId: employee._id,
         date: today,
@@ -38,6 +43,7 @@ const clockinoutcontroller = async (req, res) => {
         status: isLate ? "LATE" : "PRESENT",
       });
 
+      // Send background event safely
       await inngest.send({
         name: "employee/check-out",
         data: {
@@ -54,19 +60,26 @@ const clockinoutcontroller = async (req, res) => {
       return res.status(400).json({ message: "You have already checked out for today" });
     }
 
-    // CASE 3: Attendance exists and checkOut is empty -> Clock Out Now (FIXED LOGIC)
+    // CASE 3: Attendance exists and checkOut is empty -> Clock Out Now
     const checkInTime = new Date(attendance.checkIn).getTime();
     const checkOutTime = now.getTime();
-    const workingHours = (checkOutTime - checkInTime) / (1000 * 60 * 60);
-  
-    attendance.checkOut = now;
+    
+    // Ensure negative time differences don't happen due to server clock drifts
+    const workingHours = Math.max(0, (checkOutTime - checkInTime) / (1000 * 60 * 60));
     const workingHoursRounded = Math.round(workingHours * 100) / 100; 
 
-    const dayType = workingHoursRounded >= 8 ? "Full Day" 
-                  : workingHoursRounded >= 6 ? "Three Quarter Day" 
-                  : workingHoursRounded >= 4 ? "Half Day" 
-                  : "Short Day";
+    // Determine Day Type classifications
+    let dayType = "Short Day";
+    if (workingHoursRounded >= 8) {
+      dayType = "Full Day";
+    } else if (workingHoursRounded >= 6) {
+      dayType = "Three Quarter Day";
+    } else if (workingHoursRounded >= 4) {
+      dayType = "Half Day";
+    }
 
+    // Mutate and save to MongoDB
+    attendance.checkout = now;
     attendance.workingHours = workingHoursRounded;
     attendance.dayType = dayType;
 
@@ -75,8 +88,8 @@ const clockinoutcontroller = async (req, res) => {
     return res.status(200).json({ message: "Check-out successful", attendance });
 
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message });
+    console.error("Clock In/Out Error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 

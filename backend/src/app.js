@@ -23,6 +23,7 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser()); // Middleware to parse cookies
+app.use(express.urlencoded({ extended: true }));
 // Grouped API Routes (V1)
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
