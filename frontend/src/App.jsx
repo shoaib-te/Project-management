@@ -20,18 +20,13 @@ function Layout() {
   if (loading) return <Loading />;
 
   return user ? (
-    <div className="w-full min-h-screen flex flex-col md:flex-row bg-[#f3f4f6]">
+    <div className="flex min-h-screen w-full flex-col bg-[#f3f4f6] md:flex-row">
       {/* 1. Sidebar Component */}
       <Sidebar />
 
       {/* 2. Main Content Window Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* 3. Mobile Top Header Safety Spacer */}
-        <div className="h-16 w-full md:hidden shrink-0" />
-
-        {/* 4. Active Route Viewer Inner Content */}
-        {/* FIX: Removed "flex-1" and "overflow-y-auto" so the main window scrolls naturally with the browser window */}
-        <main className="p-4 md:p-6 2xl:p-10">
+      <div className="flex min-w-0 flex-1 flex-col md:pl-64">
+        <main className="min-h-screen flex-1 p-4 md:p-6 2xl:p-10">
           <Outlet />
         </main>
       </div>
@@ -43,7 +38,7 @@ function Layout() {
 
 function App() {
   return (
-    <main className="w-full h-full overflow-hidden bg-[#f3f4f6]">
+    <main className="min-h-screen w-full bg-[#f3f4f6]">
       <Routes>
         {/* PROTECTED ROUTES (Require Layout & User Auth) */}
         <Route element={<Layout />}>

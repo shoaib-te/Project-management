@@ -161,7 +161,7 @@ export default function Sidebar() {
 
       {/* DESKTOP PERMANENT SIDEBAR */}
       {/* FIX: Set strict viewport heights and explicit position attachments to anchor correctly alongside long dynamic layout wrappers */}
-      <div className="hidden md:flex h-screen sticky top-0 left-0 z-30 shrink-0">
+      <div className="fixed inset-y-0 left-0 z-30 hidden h-auto w-64 shrink-0 md:flex">
         <SidebarContent />
       </div>
 
