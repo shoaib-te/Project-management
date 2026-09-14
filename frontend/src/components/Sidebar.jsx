@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { LayoutDashboard, CalendarDays, FileText, CircleDollarSign, Settings, LogOut, User2, ChevronRight, Menu, X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  CalendarDays,
+  FileText,
+  CircleDollarSign,
+  Settings,
+  LogOut,
+  User2,
+  ChevronRight,
+  Menu,
+  X,
+} from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/Authcontext';
 import apiClient from '../lib/axios';
@@ -14,7 +25,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-    user?.role === 'admin' 
+    user?.role === 'admin'
       ? { name: 'Employee', icon: User2, path: '/employee' }
       : { name: 'Attendance', icon: CalendarDays, path: '/attendance' },
     { name: 'Leave', icon: FileText, path: '/leave' },
@@ -23,13 +34,14 @@ export default function Sidebar() {
   ];
 
   useEffect(() => {
-    apiClient.get('/api/profiles')
-      .then(response => {
+    apiClient
+      .get('/api/profiles')
+      .then((response) => {
         setUsername(response.data.firstName + ' ' + response.data.lastName);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching user data:', error);
-        toast.error("Failed to fetch user data.");
+        toast.error('Failed to fetch user data.');
       });
   }, []);
 
@@ -102,7 +114,9 @@ export default function Sidebar() {
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-md bg-indigo-500" />
                 )}
                 <div className="flex items-center gap-3">
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                  <Icon
+                    className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-300'}`}
+                  />
                   <span>{item.name}</span>
                 </div>
                 {isActive && <ChevronRight className="h-3 w-3 text-indigo-400" />}

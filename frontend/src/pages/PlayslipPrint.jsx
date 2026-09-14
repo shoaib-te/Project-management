@@ -5,12 +5,13 @@ import toast from 'react-hot-toast';
 
 function PlayslipPrint() {
   const { id } = useParams();
-  
+
   // 1. Set the initial state to null to easily handle loading states
   const [payslipData, setPayslipData] = useState(null);
 
   useEffect(() => {
-    apiClient.get(`/api/payslips/${id}`)
+    apiClient
+      .get(`/api/payslips/${id}`)
       .then((res) => {
         // Your response wraps the object inside a "data" property
         if (res.data && res.data.success) {
@@ -18,7 +19,7 @@ function PlayslipPrint() {
         }
       })
       .catch((err) => {
-        const errorMsg = err.response?.data?.message || err.message || "Failed to fetch payslip";
+        const errorMsg = err.response?.data?.message || err.message || 'Failed to fetch payslip';
         toast.error(errorMsg);
       });
   }, [id]);
@@ -42,13 +43,24 @@ function PlayslipPrint() {
 
   // 4. Format month "5" into English text (e.g., "May 2026")
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   const parsedMonthIndex = parseInt(month, 10) - 1;
-  const displayPeriod = parsedMonthIndex >= 0 && parsedMonthIndex < 12 
-    ? `${months[parsedMonthIndex]} ${year}` 
-    : `Month (${month}) ${year}`;
+  const displayPeriod =
+    parsedMonthIndex >= 0 && parsedMonthIndex < 12
+      ? `${months[parsedMonthIndex]} ${year}`
+      : `Month (${month}) ${year}`;
 
   // 5. Connect your line items array dynamically to the backend numbers
   const lineItems = [
@@ -61,7 +73,6 @@ function PlayslipPrint() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 antialiased font-sans">
       {/* Payslip Card Container */}
       <div className="w-full max-w-2xl bg-white p-8 md:p-12 rounded-xl shadow-sm border border-gray-100 print:shadow-none print:border-none">
-        
         {/* Header Section */}
         <div className="text-center mb-10">
           <h1 className="text-xl font-extrabold text-gray-900 tracking-wider uppercase">Payslip</h1>
@@ -71,19 +82,29 @@ function PlayslipPrint() {
         {/* Employee Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12 mb-10 text-sm">
           <div>
-            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Employee Name</span>
+            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              Employee Name
+            </span>
             <span className="font-bold text-gray-800">{fullName}</span>
           </div>
           <div>
-            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Position</span>
-            <span className="font-bold text-gray-800 capitalize">{employeeId?.position || 'N/A'}</span>
+            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              Position
+            </span>
+            <span className="font-bold text-gray-800 capitalize">
+              {employeeId?.position || 'N/A'}
+            </span>
           </div>
           <div>
-            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Email</span>
+            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              Email
+            </span>
             <span className="font-bold text-gray-800">{employeeId?.email || 'N/A'}</span>
           </div>
           <div>
-            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Period</span>
+            <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+              Period
+            </span>
             <span className="font-bold text-gray-800">{displayPeriod}</span>
           </div>
         </div>

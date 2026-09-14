@@ -1,60 +1,58 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Plus, Search, ChevronDown } from "lucide-react";
-import EmployeeCard from "../components/EmployeeCard";
-import EmployeeForm from "./Employeeform";
-import apiClient from "../lib/axios";
-import toast from "react-hot-toast";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Plus, Search, ChevronDown } from 'lucide-react';
+import EmployeeCard from '../components/EmployeeCard';
+import EmployeeForm from './Employeeform';
+import apiClient from '../lib/axios';
+import toast from 'react-hot-toast';
 
 export default function Employee() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState("All Departments");
+  const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
-  
+
   // FIXED: Changed false to null to store the whole employee object when editing
   const [editingEmployee, setEditingEmployee] = useState(null);
 
   // Filter employees based on search term and selected department
   const filteredEmployees = employees.filter((emp) => {
     // Fallback strings to protect against undefined database fields
-    const name = emp.name || "";
-    const dept = emp.department || "";
-    
-    const matchesSearch = name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const name = emp.name || '';
+    const dept = emp.department || '';
+
+    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDepartment =
-      selectedDepartment === "All Departments" ||
-      dept === selectedDepartment;
+      selectedDepartment === 'All Departments' || dept === selectedDepartment;
     return matchesSearch && matchesDepartment;
   });
 
   const departments = [
-    "Engineering",
-    "Human Resources",
-    "Marketing",
-    "Sales",
-    "Finance",
-    "Operations",
-    "IT Support",
-    "Customer Success",
-    "Product Management",
-    "Design",
+    'Engineering',
+    'Human Resources',
+    'Marketing',
+    'Sales',
+    'Finance',
+    'Operations',
+    'IT Support',
+    'Customer Success',
+    'Product Management',
+    'Design',
   ];
 
   const fetchEmployees = useCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       // Logic adjusted to match API parameter strings accurately
-      const url = selectedDepartment !== "All Departments" 
-        ? `/api/employees?department=${selectedDepartment}` 
-        : "/api/employees";
-      
+      const url =
+        selectedDepartment !== 'All Departments'
+          ? `/api/employees?department=${selectedDepartment}`
+          : '/api/employees';
+
       const res = await apiClient.get(url);
       setEmployees(res.data);
     } catch (error) {
-      console.error("Failed to fetch employees", error);
+      console.error('Failed to fetch employees', error);
     } finally {
       setLoading(false);
     }
@@ -66,14 +64,12 @@ export default function Employee() {
 
   // NEW: Connected Delete API Logic
   const handleDeleteEmployee = async (id) => {
-   
-    
     try {
       await apiClient.delete(`/api/employees/${id}`);
-      toast.success('employee is deleting ')
-      } catch (error) {
-      console.error("Failed to delete employee", error);
-      toast.error("Error deleting employee. Please try again.");
+      toast.success('employee is deleting ');
+    } catch (error) {
+      console.error('Failed to delete employee', error);
+      toast.error('Error deleting employee. Please try again.');
     }
   };
 
@@ -161,10 +157,9 @@ export default function Employee() {
             <p className="text-gray-500 font-medium">No employees found.</p>
           ) : (
             filteredEmployees.map((emp) => (
-              
               <EmployeeCard
                 // FIXED: Changed key from index to unique emp.id for secure rendering
-                key={emp.id} 
+                key={emp.id}
                 name={emp.firstName}
                 role={emp.role}
                 position={emp.position}
@@ -184,10 +179,7 @@ export default function Employee() {
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full relative overflow-hidden">
               {/* FIXED: Passing down active editing data or null if creating fresh */}
-              <EmployeeForm 
-                employeeData={editingEmployee} 
-                onClose={handleCloseForm} 
-              />
+              <EmployeeForm employeeData={editingEmployee} onClose={handleCloseForm} />
             </div>
           </div>
         )}

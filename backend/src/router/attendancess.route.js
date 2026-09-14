@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { authmiddleware, adminmiddleware } = require('../middleware/User.moddleware'); // Note: check 'moddleware' spelling
-const { clockinoutcontroller, getAttendanceByEmployee } = require('../controllers/attendances.controller');
+import { authmiddleware } from '../middleware/User.moddleware.js';
+import {
+  clockinoutcontroller,
+  getAttendanceByEmployee,
+} from '../controllers/attendances.controller.js';
 
 /**
  * @route   POST /api/attendance
@@ -17,4 +20,4 @@ router.post('/', authmiddleware, clockinoutcontroller);
  */
 router.get('/', authmiddleware, getAttendanceByEmployee);
 
-module.exports = router;
+export default router;

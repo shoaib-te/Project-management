@@ -16,11 +16,11 @@ export default function Leavefrom({ isOpen, onClose, onSubmitSuccess }) {
       // Replace this with your API client call (e.g., apiClient.post('/api/leaves', data))
       console.log('Submitted Leave Data:', data);
       await apiClient.post('/api/leave', {
-    type:data.type,
- startDate: data.startDate,
-endDate:  data.endDate,
- reason: data.reason
-})
+        type: data.type,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        reason: data.reason,
+      });
       reset();
       if (onSubmitSuccess) onSubmitSuccess();
       onClose();
@@ -35,16 +35,15 @@ endDate:  data.endDate,
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       {/* Modal Container */}
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-        
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
             <h2 className="text-lg font-bold text-slate-800">Apply for Leave</h2>
             <p className="text-xs text-slate-400 mt-0.5">Submit your leave request for approval</p>
           </div>
-          <button 
-            type="button" 
-            onClick={onClose} 
+          <button
+            type="button"
+            onClick={onClose}
             className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg transition-colors"
           >
             <X className="h-4 w-4" />
@@ -53,7 +52,6 @@ endDate:  data.endDate,
 
         {/* Form Elements */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          
           {/* Leave Type Selector */}
           <div>
             <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 mb-2">
@@ -63,7 +61,7 @@ endDate:  data.endDate,
             <select
               {...register('type', { required: 'Please select a leave type' })}
               className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 bg-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            > 
+            >
               <option value="CASUAL">CASUAL</option>
               <option value="SICK">SICK</option>
               <option value="ANNUAL">ANNUAL</option>
@@ -107,9 +105,7 @@ endDate:  data.endDate,
 
           {/* Reason Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-2">
-              Reason
-            </label>
+            <label className="block text-xs font-semibold text-slate-600 mb-2">Reason</label>
             <textarea
               rows={3}
               {...register('reason', { required: 'Please enter a reason for your leave' })}
@@ -139,7 +135,6 @@ endDate:  data.endDate,
               {isSubmitting ? 'Submitting...' : 'Submit'}
             </button>
           </div>
-
         </form>
       </div>
     </div>

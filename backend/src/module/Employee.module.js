@@ -1,11 +1,11 @@
-const DEPARTMENTS = require("../constants/department");
+import DEPARTMENTS from '../constants/department.js';
 
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 const employeeSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       unique: true,
     },
@@ -20,16 +20,15 @@ const employeeSchema = new mongoose.Schema(
     deductions: { type: Number, default: 0 },
     employmentStatus: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE"],
-      default: "ACTIVE",
+      enum: ['ACTIVE', 'INACTIVE'],
+      default: 'ACTIVE',
     },
     joiningDate: { type: Date, default: Date.now },
     isDeleted: { type: Boolean, default: false },
-    bio: { type: String, default: "" },
+    bio: { type: String, default: '' },
   },
   { timestamps: true },
 );
 
-const Employee =
-  mongoose.models.Employee || mongoose.model("Employee", employeeSchema);
-module.exports = Employee;
+const Employee = mongoose.models.Employee || mongoose.model('Employee', employeeSchema);
+export default Employee;

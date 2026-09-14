@@ -6,12 +6,12 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token")); 
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   // 1. Defined first so refreshSession can safely invoke it
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
     setUser(null);
     setToken(null);
     setLoading(false);
@@ -19,27 +19,26 @@ export function AuthProvider({ children }) {
 
   // 2. Uses the token already attached by your interceptor
   const refreshSession = useCallback(async () => {
-    const storedToken = localStorage.getItem("token")
-    if ( !storedToken) {
+    const storedToken = localStorage.getItem('token');
+    if (!storedToken) {
       setUser(null);
       setToken(null);
       setLoading(false);
       return;
-    }else {
+    } else {
+      try {
+        // Use apiClient so the VITE_BACKEND_URL baseURL and the
+        // Authorization Bearer token interceptor are both applied.
 
-    try {
-      // Use apiClient so the VITE_BACKEND_URL baseURL and the
-      // Authorization Bearer token interceptor are both applied.
-    
-      const response = await apiClient.get('/api/auth/session');
-      setUser(response.data.user);
-    } catch (error) {
-      toast.error("Session expired. Please log in again.");
-      logout();
-    } finally {
-      setLoading(false);
+        const response = await apiClient.get('/api/auth/session');
+        setUser(response.data.user);
+      } catch (error) {
+        toast.error('Session expired. Please log in again.');
+        logout();
+      } finally {
+        setLoading(false);
+      }
     }
-  }
   }, [logout]);
 
   const login = async ({ email, password, roletype }) => {
@@ -50,14 +49,13 @@ export function AuthProvider({ children }) {
       const { user: userData, token: userToken } = response.data;
 
       // Interceptor will automatically pick this up for subsequent requests
-      localStorage.setItem("token", userToken);
-   
+      localStorage.setItem('token', userToken);
 
       setUser(userData);
       setToken(userToken);
       return response;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || 'Login failed');
       throw error;
     }
   };
@@ -77,7 +75,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }

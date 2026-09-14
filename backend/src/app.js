@@ -1,25 +1,26 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 
 // Import Routers
-const authRoutes = require('./router/user.route');
-const employeeRoutes = require('./router/employee.route');
-const profileRoutes = require('./router/profile.route');
-const attendanceRoutes = require('./router/attendancess.route');
-const leaveRoutes = require('./router/Leaves.route');
-const payslipsRoutes = require('./router/Payslips.route');
-const dashbordRoutes = require('./router/dashbord.route');
-const  cookieParser = require('cookie-parser')
-
+import authRoutes from './router/User.route.js';
+import employeeRoutes from './router/employee.route.js';
+import profileRoutes from './router/profile.route.js';
+import attendanceRoutes from './router/attendancess.route.js';
+import leaveRoutes from './router/Leaves.route.js';
+import payslipsRoutes from './router/Payslips.route.js';
+import dashbordRoutes from './router/dashbord.route.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 // Global Middlewares
-app.use(cors({
-   origin: ['http://localhost:5173', 'http://localhost:3000'], 
-   credentials: true
-}));
+app.use(
+  cors({
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser()); // Middleware to parse cookies
@@ -32,9 +33,9 @@ apiRouter.use('/auth', authRoutes);
 apiRouter.use('/employees', employeeRoutes);
 apiRouter.use('/profiles', profileRoutes);
 apiRouter.use('/attendance', attendanceRoutes);
-apiRouter.use('/leave',leaveRoutes)
-apiRouter.use('/payslips',payslipsRoutes)
-apiRouter.use('/dashbord',dashbordRoutes)
+apiRouter.use('/leave', leaveRoutes);
+apiRouter.use('/payslips', payslipsRoutes);
+apiRouter.use('/dashbord', dashbordRoutes);
 // Apply Version Prefix
 
 // Global 404 Route Handler
@@ -48,4 +49,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal Server Error' });
 });
 
-module.exports = app;
+export default app;

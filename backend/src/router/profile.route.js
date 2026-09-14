@@ -1,6 +1,6 @@
-const express = require('express');
-const { updateProfile, getProfile } = require('../controllers/Profile.controller');
-const { authmiddleware } = require('../middleware/User.moddleware'); // Note: check 'moddleware' spelling in path
+import express from 'express';
+import { updateProfile, getProfile } from '../controllers/Profile.controller.js';
+import { authmiddleware } from '../middleware/User.moddleware.js';
 const router = express.Router();
 
 /**
@@ -8,7 +8,7 @@ const router = express.Router();
  * @desc    Get the profile data of the authenticated user
  * @access  Private (Requires authentication token)
  */
-router.get('/', authmiddleware, getProfile);  
+router.get('/', authmiddleware, getProfile);
 
 /**
  * @route   PUT /api/profiles
@@ -17,4 +17,4 @@ router.get('/', authmiddleware, getProfile);
  */
 router.put('/', authmiddleware, updateProfile);
 
-module.exports = router;
+export default router;

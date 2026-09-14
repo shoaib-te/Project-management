@@ -7,7 +7,7 @@ export default function ChangePassword({ onClose }) {
     currentPassword: '',
     newPassword: '',
   });
-  
+
   const [loading, setLoading] = useState(false); // Handle button loading states
 
   const handleChange = (e) => {
@@ -25,7 +25,8 @@ export default function ChangePassword({ onClose }) {
     } catch (error) {
       console.error(error);
       // Grab backend custom message or fallback to a general error string
-      const errorMsg = error.response?.data?.message || 'Failed to update password. Please try again.';
+      const errorMsg =
+        error.response?.data?.message || 'Failed to update password. Please try again.';
       toast.error(errorMsg);
     } finally {
       setLoading(false);
@@ -35,7 +36,6 @@ export default function ChangePassword({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl transition-all">
-        
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div className="flex items-center space-x-2">
@@ -54,12 +54,18 @@ export default function ChangePassword({ onClose }) {
             </svg>
             <h2 className="text-lg font-semibold text-gray-800">Change Password</h2>
           </div>
-          <button 
-            type="button" 
-            onClick={onClose} 
+          <button
+            type="button"
+            onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>

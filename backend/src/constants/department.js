@@ -1,14 +1,14 @@
- const DEPARTMENTS = [
-  "Engineering", 
-  "Human Resources", 
-  "Marketing", 
-  "Sales", 
-  "Finance",
-  "Operations", 
-  "IT Support", 
-  "Customer Success",
-  "Product Management", 
-  "Design"
-]
+const DEPARTMENTS = [
+  'Engineering',
+  'Human Resources',
+  'Marketing',
+  'Sales',
+  'Finance',
+  'Operations',
+  'IT Support',
+  'Customer Success',
+  'Product Management',
+  'Design',
+];
 
-module.exports= DEPARTMENTS
+export default DEPARTMENTS;

@@ -37,9 +37,7 @@ function Leave() {
     try {
       await apiClient.patch(`/api/leave/${id}`, { status: newStatus });
       setLeaveRequests((prev) =>
-        prev.map((req) =>
-          req._id === id || req.id === id ? { ...req, status: newStatus } : req
-        )
+        prev.map((req) => (req._id === id || req.id === id ? { ...req, status: newStatus } : req)),
       );
     } catch (error) {
       console.error('Failed to update leave status:', error);
@@ -215,7 +213,10 @@ function Leave() {
                   const leaveStatus = item.status?.toUpperCase() || 'PENDING';
 
                   return (
-                    <tr key={item._id || item.id || index} className="hover:bg-slate-50/30 transition-colors">
+                    <tr
+                      key={item._id || item.id || index}
+                      className="hover:bg-slate-50/30 transition-colors"
+                    >
                       <td className="py-5 px-6">
                         <span
                           className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-wide ${

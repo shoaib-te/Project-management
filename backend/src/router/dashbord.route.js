@@ -1,6 +1,6 @@
-const express = require('express');
-const { authmiddleware, adminmiddleware } = require('../middleware/User.moddleware'); // Note: check 'moddleware' spelling
-const dashbordcontroller = require('../controllers/dashbord.controller'); // Note: check 'dashbord' spelling
+import express from 'express';
+import { authmiddleware } from '../middleware/User.moddleware.js';
+import dashbordcontroller from '../controllers/dashbord.controller.js';
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ const router = express.Router();
  */
 router.get('/', authmiddleware, dashbordcontroller);
 
-module.exports = router;
+export default router;

@@ -1,27 +1,27 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authController = require('../controllers/User.controller');
-const { authmiddleware } = require('../middleware/User.moddleware'); // Note: check 'moddleware' spelling in path
+import { login, session, resetPassword } from '../controllers/User.controller.js';
+import { authmiddleware } from '../middleware/User.moddleware.js';
 
 /**
  * @route   POST /api/auth/login
  * @desc    Authenticate user and return a token / create session
  * @access  Public
  */
-router.post('/login', authController.login);
+router.post('/login', login);
 
 /**
  * @route   GET /api/auth/session
  * @desc    Validate current user session and return user data
  * @access  Private (Requires authentication middleware)
  */
-router.get('/session', authmiddleware, authController.session);
+router.get('/session', authmiddleware, session);
 
 /**
  * @route   POST /api/auth/reset-password
  * @desc    Reset the authenticated user's password
  * @access  Private (Requires authentication middleware)
  */
-router.post('/reset-password', authmiddleware, authController.resetPassword);
+router.post('/reset-password', authmiddleware, resetPassword);
 
-module.exports = router;
+export default router;

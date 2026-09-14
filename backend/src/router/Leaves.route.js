@@ -1,6 +1,10 @@
-const express = require('express');
-const { authmiddleware, adminmiddleware } = require('../middleware/User.moddleware'); // Note: check 'moddleware' spelling
-const { getAllApplications, updateApplicationStatus, createLeaveApplication } = require('../controllers/Leaveapplaction.controller'); // Note: check 'Leaveapplaction' spelling
+import express from 'express';
+import { authmiddleware, adminmiddleware } from '../middleware/User.moddleware.js';
+import {
+  getAllApplications,
+  updateApplicationStatus,
+  createLeaveApplication,
+} from '../controllers/Leaveapplaction.controller.js';
 
 const router = express.Router();
 
@@ -25,4 +29,4 @@ router.get('/', authmiddleware, getAllApplications);
  */
 router.patch('/:id', authmiddleware, adminmiddleware, updateApplicationStatus);
 
-module.exports = router;
+export default router;

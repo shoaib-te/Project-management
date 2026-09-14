@@ -9,7 +9,7 @@ import GeneratePayslipModal from '../components/GeneratePayslipModal';
 function Payslip() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // State managers
   const [payslips, setPayslips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,14 +20,12 @@ function Payslip() {
     try {
       setLoading(true);
       const res = await apiClient.get('/api/payslips');
-      
+
       // Safely parse nested data formats (e.g., res.data.data, res.data.payslips, or direct array)
-      const list = Array.isArray(res.data) 
-        ? res.data 
-        : res.data?.data || res.data?.payslips || [];
+      const list = Array.isArray(res.data) ? res.data : res.data?.data || res.data?.payslips || [];
 
       setPayslips(Array.isArray(list) ? list : []);
-      console.log(payslips)
+      console.log(payslips);
     } catch (error) {
       console.error('Error fetching payslip metrics:', error);
       toast.error('Failed to sync payslip records from server.');
@@ -41,7 +39,6 @@ function Payslip() {
   }, []);
 
   const handleDownload = (id) => {
-
     navigate(`/playslip/${id}`);
   };
 
@@ -66,8 +63,8 @@ function Payslip() {
             <h1 className="text-2xl font-semibold text-gray-950">Payslips</h1>
             <p className="text-sm text-gray-500">Generate and manage employee payslips</p>
           </header>
-          
-          <button 
+
+          <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-1.5 bg-[#4c3dec] hover:bg-[#3b2fc4] text-white px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer"
           >
@@ -98,19 +95,29 @@ function Payslip() {
                   </tr>
                 ) : (
                   payslips.map((slip) => (
-                    
-                    <tr key={slip._id || slip.id} className="hover:bg-slate-50/30 transition-colors">
+                    <tr
+                      key={slip._id || slip.id}
+                      className="hover:bg-slate-50/30 transition-colors"
+                    >
                       <td className="py-5 px-8 text-gray-900 font-normal">
-                        {typeof slip.employee === 'object' 
-                          ? `${slip.employee?.firstName || ''} ${slip.employee?.lastName || ''}`.trim() 
+                        {typeof slip.employee === 'object'
+                          ? `${slip.employee?.firstName || ''} ${slip.employee?.lastName || ''}`.trim()
                           : slip.employeeName || slip.employee}
                       </td>
-                      <td className="py-5 px-8 text-gray-500 font-normal">{ new Date(slip.month).toLocaleString('en-US', { month: 'short' }) +','+ slip.year}</td>
                       <td className="py-5 px-8 text-gray-500 font-normal">
-                        {typeof slip.baseSalary === 'number' ? `$${slip.baseSalary.toLocaleString()}` : slip.baseSalary}
+                        {new Date(slip.month).toLocaleString('en-US', { month: 'short' }) +
+                          ',' +
+                          slip.year}
+                      </td>
+                      <td className="py-5 px-8 text-gray-500 font-normal">
+                        {typeof slip.baseSalary === 'number'
+                          ? `$${slip.baseSalary.toLocaleString()}`
+                          : slip.baseSalary}
                       </td>
                       <td className="py-5 px-8 text-gray-900 font-bold">
-                        {typeof slip.netSalary === 'number' ? `$${slip.netSalary.toLocaleString()}` : slip.netSalary}
+                        {typeof slip.netSalary === 'number'
+                          ? `$${slip.netSalary.toLocaleString()}`
+                          : slip.netSalary}
                       </td>
                       <td className="py-5 px-8 text-right pr-8">
                         <div className="flex justify-end">
@@ -132,7 +139,7 @@ function Payslip() {
         </div>
 
         {/* Modal rendered in Admin View */}
-        <GeneratePayslipModal 
+        <GeneratePayslipModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSuccess={fetchPayslipData}
@@ -170,12 +177,20 @@ function Payslip() {
               ) : (
                 payslips.map((slip) => (
                   <tr key={slip._id || slip.id} className="hover:bg-slate-50/30 transition-colors">
-                    <td className="py-5 px-8 text-gray-500 font-normal">{new Date(slip.month).toLocaleString('en-US', { month: 'short' }) +','+ slip.year}</td>
                     <td className="py-5 px-8 text-gray-500 font-normal">
-                      {typeof slip.baseSalary === 'number' ? `$${slip.baseSalary.toLocaleString()}` : slip.baseSalary}
+                      {new Date(slip.month).toLocaleString('en-US', { month: 'short' }) +
+                        ',' +
+                        slip.year}
+                    </td>
+                    <td className="py-5 px-8 text-gray-500 font-normal">
+                      {typeof slip.baseSalary === 'number'
+                        ? `$${slip.baseSalary.toLocaleString()}`
+                        : slip.baseSalary}
                     </td>
                     <td className="py-5 px-8 text-gray-900 font-bold">
-                      {typeof slip.netSalary === 'number' ? `$${slip.netSalary.toLocaleString()}` : slip.netSalary}
+                      {typeof slip.netSalary === 'number'
+                        ? `$${slip.netSalary.toLocaleString()}`
+                        : slip.netSalary}
                     </td>
                     <td className="py-5 px-8 text-right pr-8">
                       <div className="flex justify-end">

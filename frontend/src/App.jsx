@@ -1,24 +1,24 @@
-import { useLocation, Navigate, Routes, Route, Outlet } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Sidebar from "./components/Sidebar";
-import Landing from "./pages/Landing";
-import Leave from "./pages/Leave";
-import Payslip from "./pages/Payslip";
-import Settings from "./pages/Settings";
-import Employee from "./pages/Employee";
-import Attendance from "./pages/Attensdance";
-import PlayslipPrint from "./pages/PlayslipPrint";
-import { useAuth } from "./context/Authcontext";
+import { useLocation, Navigate, Routes, Route, Outlet } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Sidebar from './components/Sidebar';
+import Landing from './pages/Landing';
+import Leave from './pages/Leave';
+import Payslip from './pages/Payslip';
+import Settings from './pages/Settings';
+import Employee from './pages/Employee';
+import Attendance from './pages/Attensdance';
+import PlayslipPrint from './pages/PlayslipPrint';
+import { useAuth } from './context/Authcontext';
 import { Toaster } from 'react-hot-toast';
-import Loading from "./pages/Loading";
+import Loading from './pages/Loading';
 
 function Layout() {
   const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) return <Loading />;
-  
+
   return user ? (
     <div className="w-full min-h-screen flex flex-col md:flex-row bg-[#f3f4f6]">
       {/* 1. Sidebar Component */}
@@ -79,11 +79,11 @@ function App() {
             />
           }
         />
-        
+
         {/* Fallback Catch-All Route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      
+
       <Toaster position="top-right" reverseOrder={false} />
     </main>
   );

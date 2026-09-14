@@ -1,25 +1,26 @@
 // Corrected spelling
-const dotenv = require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const http = require('http');
-const app = require("./src/app");
-const connectDB = require("./src/config/db");
+import http from 'http';
+import app from './src/app.js';
+import connectDB from './src/config/db.js';
 
-const { serve } = require("inngest/express");
+import { serve } from 'inngest/express';
 // Import your custom inngest client and functions array
-const { inngest, functions } = require("./src/inngest");
+import { inngest, functions } from './src/inngest/index.js';
 
 const PORT = process.env.PORT || 5000;
 
 // 1. Establish Database Connection
 connectDB();
 
-app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use('/api/inngest', serve({ client: inngest, functions }));
 
 // 2. Create HTTP Server instances wrapping your Express app
 const server = http.createServer(app);
 
 // 3. Start Listening for Incoming Requests
 server.listen(PORT, () => {
-    console.log(` Server running  on port ${PORT}`);
+  console.log(` Server running  on port ${PORT}`);
 });

@@ -33,25 +33,32 @@ export default function Attendance() {
   const fetchData = async () => {
     try {
       const res = await apiClient.get('/api/attendance');
-      const attendanceList = res.data?.data || []; 
+      const attendanceList = res.data?.data || [];
 
       if (Array.isArray(attendanceList)) {
         const formattedActivities = attendanceList.map((item) => ({
           id: item._id,
           date: formatDate(item.date),
           checkIn: formatTime(item.checkIn),
-          checkOut: formatTime(item.checkOut || item.checkout), 
-          hours: item.workingHours !== null && item.workingHours !== undefined ? `${item.workingHours}h` : '--',
+          checkOut: formatTime(item.checkOut || item.checkout),
+          hours:
+            item.workingHours !== null && item.workingHours !== undefined
+              ? `${item.workingHours}h`
+              : '--',
           type: item.dayType || '--',
           status: item.status || 'PRESENT',
         }));
 
         setActivities(formattedActivities);
 
-        const activeSession = attendanceList.find((item) => item.checkIn && !(item.checkOut || item.checkout));
+        const activeSession = attendanceList.find(
+          (item) => item.checkIn && !(item.checkOut || item.checkout),
+        );
         setIsCheckedIn(!!activeSession);
 
-        const presentCount = attendanceList.filter((item) => item.status === 'PRESENT' || item.status === 'LATE').length;
+        const presentCount = attendanceList.filter(
+          (item) => item.status === 'PRESENT' || item.status === 'LATE',
+        ).length;
         const lateCount = attendanceList.filter((item) => item.status === 'LATE').length;
         const totalHours = attendanceList.reduce((acc, item) => acc + (item.workingHours || 0), 0);
         const avgHours = presentCount ? (totalHours / presentCount).toFixed(1) : 0;
@@ -75,7 +82,7 @@ export default function Attendance() {
     setLoading(true);
     try {
       await apiClient.post('/api/attendance');
-      await fetchData(); 
+      await fetchData();
     } catch (error) {
       console.error('Clock in/out failed:', error);
     } finally {
@@ -93,12 +100,7 @@ export default function Attendance() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {metrics.map((metric, index) => (
-            <MetricCard
-              key={index}
-              title={metric.title}
-              value={metric.value}
-              icon={metric.icon}
-            />
+            <MetricCard key={index} title={metric.title} value={metric.value} icon={metric.icon} />
           ))}
         </div>
 
@@ -128,13 +130,13 @@ export default function Attendance() {
                       <td className="py-4 px-6 text-gray-500">{row.checkOut}</td>
                       <td className="py-4 px-6 text-gray-500">{row.hours}</td>
                       <td className="py-4 px-6">
-                        <span 
+                        <span
                           className={`px-2.5 py-1 rounded text-[10px] font-semibold tracking-wide ${
-                            row.type === 'Full Day' 
-                              ? 'bg-emerald-50 text-emerald-600' 
-                              : row.type === '--' 
-                              ? 'bg-gray-100 text-gray-600' 
-                              : 'bg-amber-50 text-amber-600'
+                            row.type === 'Full Day'
+                              ? 'bg-emerald-50 text-emerald-600'
+                              : row.type === '--'
+                                ? 'bg-gray-100 text-gray-600'
+                                : 'bg-amber-50 text-amber-600'
                           }`}
                         >
                           {row.type}
@@ -177,7 +179,11 @@ export default function Attendance() {
           }`}
         >
           <div className="border-r border-white/20 pr-3 text-white/90">
-            {isCheckedIn ? <LogOut size={20} strokeWidth={2} /> : <LogIn size={20} strokeWidth={2} />}
+            {isCheckedIn ? (
+              <LogOut size={20} strokeWidth={2} />
+            ) : (
+              <LogIn size={20} strokeWidth={2} />
+            )}
           </div>
           <div className="text-left space-y-0.5">
             <p className="text-sm font-semibold tracking-wide leading-none">

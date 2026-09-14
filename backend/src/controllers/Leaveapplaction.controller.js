@@ -1,6 +1,6 @@
-const LeaveApplication = require("../module/Leaveapplaction.module");
-const Employee = require("../module/Employee.module");
-const { inngest } = require("../inngest");
+import LeaveApplication from '../module/Leaveapplaction.module.js';
+import Employee from '../module/Employee.module.js';
+import { inngest } from '../inngest/index.js';
 
 // Create a new leave application
 const createLeaveApplication = async (req, res) => {
@@ -9,19 +9,17 @@ const createLeaveApplication = async (req, res) => {
     const { type, startDate, endDate, reason } = req.body;
 
     if (!type || !startDate || !endDate || !reason) {
-      return res.status(400).json({ message: "missing fields ." });
+      return res.status(400).json({ message: 'missing fields .' });
     }
 
     const employee = await Employee.findOne({ userId: session.userId });
 
     if (!employee) {
-      return res.status(400).json({ message: "Employee is not found ." });
+      return res.status(400).json({ message: 'Employee is not found .' });
     }
 
     if (employee.isDeleted) {
-      return res
-        .status(400)
-        .json({ message: " your account is deactivated ." });
+      return res.status(400).json({ message: ' your account is deactivated .' });
     }
 
     // Validation: Check if end date is before start date
@@ -30,14 +28,10 @@ const createLeaveApplication = async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     if (new Date(startDate) <= today || new Date(endDate) <= today) {
-      return res
-        .status(400)
-        .json({ message: "Leave dates must be in the future." });
+      return res.status(400).json({ message: 'Leave dates must be in the future.' });
     }
     if (new Date(startDate) > new Date(endDate)) {
-      return res
-        .status(400)
-        .json({ message: "End date cannot be before start date." });
+      return res.status(400).json({ message: 'End date cannot be before start date.' });
     }
 
     const newApplication = new LeaveApplication({
@@ -46,26 +40,24 @@ const createLeaveApplication = async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       reason,
-      status: "PENDING",
+      status: 'PENDING',
 
       // Status defaults to PENDING automatically via schema
     });
 
     await newApplication.save();
     await inngest.send({
-      name: "leave/pending",
+      name: 'leave/pending',
       data: {
         leaveapplactionId: newApplication._id,
       },
     });
-    res
-      .status(201)
-      .json({
-        message: "Leave application submitted successfully.",
-        data: newApplication,
-      });
+    res.status(201).json({
+      message: 'Leave application submitted successfully.',
+      data: newApplication,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error.", error: error.message });
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 };
 
@@ -73,14 +65,14 @@ const createLeaveApplication = async (req, res) => {
 const getAllApplications = async (req, res) => {
   try {
     const session = req.session;
-    const isAdmin = req.session.role === "admin";
+    const isAdmin = req.session.role === 'admin';
 
     if (isAdmin) {
       const status = req.query.status;
 
       const where = status ? { status } : {};
       const applications = await LeaveApplication.find(where)
-        .populate("employeeId", "firstName lastName email")
+        .populate('employeeId', 'firstName lastName email')
         .sort({ createdAt: -1 }); // Corrected field name and colon syntax
 
       const data = applications.map((l) => {
@@ -99,7 +91,7 @@ const getAllApplications = async (req, res) => {
       }).lean();
 
       if (!employee) {
-        return res.status(400).json({ message: "Employee is not found ." });
+        return res.status(400).json({ message: 'Employee is not found .' });
       }
       const leaves = await LeaveApplication.find({
         employeeId: employee._id,
@@ -110,12 +102,10 @@ const getAllApplications = async (req, res) => {
         employee: { ...employee, id: employee._id.toString() },
       });
     }
-
-    
   } catch (error) {
     console.log(error);
 
-    res.status(500).json({ message: "Server error.", error: error.message });
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 };
 
@@ -126,9 +116,9 @@ const updateApplicationStatus = async (req, res) => {
     const { status } = req.body;
 
     // Validation: Check if the provided status is valid
-    const validStatuses = ["PENDING", "APPROVED", "REJECTED"];
+    const validStatuses = ['PENDING', 'APPROVED', 'REJECTED'];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status value." });
+      return res.status(400).json({ message: 'Invalid status value.' });
     }
 
     const updatedApplication = await LeaveApplication.findByIdAndUpdate(
@@ -138,23 +128,17 @@ const updateApplicationStatus = async (req, res) => {
     );
 
     if (!updatedApplication) {
-      return res.status(404).json({ message: "Leave application not found." });
+      return res.status(404).json({ message: 'Leave application not found.' });
     }
 
-    res
-      .status(200)
-      .json({
-        message: `Application status updated to ${status}.`,
-        data: updatedApplication,
-      });
+    res.status(200).json({
+      message: `Application status updated to ${status}.`,
+      data: updatedApplication,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server error.", error: error.message });
+    res.status(500).json({ message: 'Server error.', error: error.message });
   }
 };
 
-module.exports = {
-  createLeaveApplication,
-  updateApplicationStatus,
-  getAllApplications,
-};
+export { createLeaveApplication, updateApplicationStatus, getAllApplications };

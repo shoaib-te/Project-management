@@ -26,7 +26,7 @@ function Settings() {
       try {
         const response = await apiClient.get('/api/profiles');
         const profile = response?.data?.data || response?.data;
-        
+
         if (profile) {
           setFormData({
             fullName: `${profile.firstName || ''} ${profile.lastName || ''}`.trim(),
@@ -75,7 +75,6 @@ function Settings() {
   return (
     <div className="min-h-screen bg-slate-50/50 p-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
-        
         {/* Header Block Container */}
         <header className="space-y-1">
           <h1 className="text-2xl font-semibold text-gray-950">Settings</h1>
@@ -96,7 +95,9 @@ function Settings() {
               </div>
               <div>
                 <span className="text-gray-400 block font-medium">Email</span>
-                <span className="font-bold text-gray-800">{formData.email || 'admin@example.com'}</span>
+                <span className="font-bold text-gray-800">
+                  {formData.email || 'admin@example.com'}
+                </span>
               </div>
               <div>
                 <span className="text-gray-400 block font-medium">Role</span>
@@ -200,13 +201,10 @@ function Settings() {
             </button>
           </div>
         </div>
-
       </div>
 
       {/* Render Modal Conditionally */}
-      {isPasswordModalOpen && (
-        <ChangePassword onClose={() => setIsPasswordModalOpen(false)} />
-      )}
+      {isPasswordModalOpen && <ChangePassword onClose={() => setIsPasswordModalOpen(false)} />}
     </div>
   );
 }
