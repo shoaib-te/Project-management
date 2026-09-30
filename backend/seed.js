@@ -16,7 +16,6 @@ async function registerAdmin() {
       process.exit(1);
     }
 
-    // 2. Connect to the database
     await connectDB();
 
     const existingAdmin = await UserModule.findOne({ email: ADMIN_EMAIL });
