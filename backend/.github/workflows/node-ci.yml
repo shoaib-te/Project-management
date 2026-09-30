@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main]
   pull_request:
     branches: [ main ]
 
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Specify your exact Node version
+          node-version: '24' # Specify your exact Node version
           cache: 'npm'       # Automatically caches npm dependencies
 
       - name: Install clean dependencies
