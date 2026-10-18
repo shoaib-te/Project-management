@@ -39,14 +39,14 @@ apiRouter.use('/dashbord', dashbordRoutes);
 // Apply Version Prefix
 
 // Global 404 Route Handler
-app.use((req, res, next) => {
-  res.status(404).json({ success: false, message: 'API endpoint not found' });
-});
+// app.use((req, res, next) => {
+//   res.status(404).json({ success: false, message: 'API endpoint not found' });
+// });
 
-// Global Error Handler Middleware
-app.use((err, req, res, next) => {
-  console.error('Server Error Context:', err.stack);
-  res.status(500).json({ success: false, message: 'Internal Server Error' });
-});
+// // Global Error Handler Middleware
+// app.use((err, req, res, next) => {
+//   console.error('Server Error Context:', err.stack);
+//   res.status(500).json({ success: false, message: 'Internal Server Error' });
+// });
 
 export default app;
