@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Plus, Search, ChevronDown } from 'lucide-react';
 import EmployeeCard from '../components/EmployeeCard';
-import EmployeeForm from './Employeeform';
+import EmployeeForm from './EmployeeForm';
 import apiClient from '../lib/axios';
 import toast from 'react-hot-toast';
 
