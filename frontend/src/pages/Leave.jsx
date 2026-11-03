@@ -4,7 +4,7 @@ import { Check, X, Thermometer, Umbrella, Plus } from 'lucide-react';
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
 import { useAuth } from '../hooks/useAuth';
 import apiClient from '../lib/axios';
-import Leavefrom from '../components/leavefrom';
+import Leavefrom from '../components/Leavefrom';
 
 function Leave() {
   const { user } = useAuth();
