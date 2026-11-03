@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Lock, Save, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuth } from '../context/Authcontext';
+import { useAuth } from '../context/AuthContext';
 import apiClient from '../lib/axios';
 import ChangePassword from './Changepassword';
 

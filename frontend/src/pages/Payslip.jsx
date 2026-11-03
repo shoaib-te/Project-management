@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/Authcontext';
+import { useAuth } from '../context/AuthContext';
 import apiClient from '../lib/axios';
 import toast from 'react-hot-toast';
 import GeneratePayslipModal from '../components/GeneratePayslipModal';

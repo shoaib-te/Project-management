@@ -9,7 +9,7 @@ import Settings from './pages/Settings';
 import Employee from './pages/Employee';
 import Attendance from './pages/Attensdance';
 import PlayslipPrint from './pages/PlayslipPrint';
-import { useAuth } from './context/Authcontext';
+import { useAuth } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import Loading from './pages/Loading';
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Check, X, Thermometer, Umbrella, Plus } from 'lucide-react';
 
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
-import { useAuth } from '../context/Authcontext';
+import { useAuth } from '../context/AuthContext';
 import apiClient from '../lib/axios';
 import Leavefrom from '../components/leavefrom';
 
