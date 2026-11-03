@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation, Navigate, Routes, Route, Outlet } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -9,7 +11,8 @@ import Settings from './pages/Settings';
 import Employee from './pages/Employee';
 import Attendance from './pages/Attensdance';
 import PlayslipPrint from './pages/PlayslipPrint';
-import { useAuth } from './context/AuthContext';
+import { refreshSession } from './store/authSlice';
+import { useAuth } from './hooks/useAuth';
 import { Toaster } from 'react-hot-toast';
 import Loading from './pages/Loading';
 
@@ -37,6 +40,12 @@ function Layout() {
 }
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(refreshSession());
+  }, [dispatch]);
+
   return (
     <main className="min-h-screen w-full bg-[#f3f4f6]">
       <Routes>

@@ -2,7 +2,6 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react'; // Install lucide-react or use standard SVG arrows
 import { useNavigate } from 'react-router-dom';
 import Loading from './Loading';
-import { useAuth } from '../context/AuthContext';
 
 export default function Landing() {
   const currentYear = new Date().getFullYear();

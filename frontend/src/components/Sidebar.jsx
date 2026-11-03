@@ -12,7 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import apiClient from '../lib/axios';
 import toast from 'react-hot-toast';
 
